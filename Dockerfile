@@ -30,5 +30,5 @@ EXPOSE 18050
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18050/healthz', timeout=3)"
 
-CMD ["sh", "-c", "python -m alembic upgrade head && exec abm-server"]
+CMD ["sh", "-c", "abm-server-migrate && exec abm-server"]
 

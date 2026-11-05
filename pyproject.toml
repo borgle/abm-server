@@ -43,13 +43,14 @@ dev = [
 
 [project.scripts]
 abm-server = "abm_server.main:run"
+abm-server-migrate = "abm_server.migrate:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["abm_server*"]
 
 [tool.setuptools.package-data]
-abm_server = ["web/templates/*.html", "web/templates/partials/*.html", "web/static/*"]
+abm_server = ["web/templates/*.html", "web/templates/partials/*.html", "web/static/*", "migrations/*.py", "migrations/*.mako", "migrations/versions/*.py"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
