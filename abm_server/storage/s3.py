@@ -48,7 +48,7 @@ class S3Storage(ObjectStorage):
             from botocore.config import Config
         except ImportError as exc:  # pragma: no cover - optional dependency
             raise StorageError(
-                "S3 storage requires boto3: pip install 'abm-browser-mcp-server[s3]'"
+                "S3 storage requires boto3: pip install 'abm-server[s3]'"
             ) from exc
         self._client = boto3.client(
             "s3",

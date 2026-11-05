@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: abm-browser-mcp-server:latest
-    container_name: abm-browser-mcp-server
+    image: abm-server:latest
+    container_name: abm-server
     restart: unless-stopped
     ports:
       - "127.0.0.1:${ABM_PORT:-18050}:18050"

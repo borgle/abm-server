@@ -13,7 +13,7 @@ ABM 是 **a browser mcp** 的简称。
 项目统一使用以下命名空间：
 
 - Python 包：`abm_server`
-- 服务与镜像名称：`abm-browser-mcp-server`
+- 服务与镜像名称：`abm-server`
 - CLI 入口：`abm-server`
 - MCP 服务名：`abm-browser-mcp`
 - 环境变量：`ABM_*`
@@ -86,7 +86,7 @@ flowchart LR
 
 ## 5. 仓库边界
 
-### 5.1 `browser-mcp-server`
+### 5.1 `abm-cloud`
 
 负责：
 
@@ -99,7 +99,7 @@ flowchart LR
 - 服务端网页与静态资源。
 - 部署配置和服务端测试。
 
-### 5.2 `browser-mcp-extension`
+### 5.2 `abm-extension`
 
 负责：
 
@@ -1233,7 +1233,7 @@ MCP SDK v2 负责 JSON-RPC、协议版本协商、`server/discover` 和传输错
 
 ```mermaid
 flowchart TB
-    Proxy[HTTPS/WSS 反向代理] --> App[abm-browser-mcp-server]
+    Proxy[HTTPS/WSS 反向代理] --> App[abm-server]
     App --> Volume[(持久化 /data)]
     App --> SQLite[(abm.db)]
     Client[MCP 客户端] --> Proxy
