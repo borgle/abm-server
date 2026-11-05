@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/login" data-i18n="nav.login">登录</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="hero-card narrow auth-card">
+    <p class="eyebrow" data-i18n="verify.eyebrow">EMAIL VERIFICATION</p>
+    <h1 data-i18n="verify.title">验证邮箱</h1>
+    <p class="muted" data-i18n="verify.lead">正在验证你的邮箱地址…</p>
+    <p id="verify-status" class="hint" data-i18n="verify.working">请稍候…</p>
+    <p class="hint"><a href="/login" data-i18n="verify.back">返回登录</a></p>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/verify-email.js?v={{ asset_version }}"></script>
+{% endblock %}

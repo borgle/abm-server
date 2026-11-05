@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% block html_lang %}en{% endblock %}
+{% block page_title %}ABM Server MCP Guide{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="/static/guide.css?v={{ asset_version }}" />
+{% endblock %}
+{% block nav %}
+  <a href="/" data-i18n="nav.home">Home</a>
+  <a href="#quickstart" data-i18n="nav.quickstart">Quickstart</a>
+  <a href="#tools" data-i18n="nav.tools">Tools</a>
+  <a href="/console" data-i18n="nav.console">Console</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <article class="doc" data-issuer-url="{{ issuer_url }}" data-release-url="{{ extension_release_url }}">
+    <header class="doc-header">
+      <p class="eyebrow" data-i18n="guide.eyebrow">AGENT MANUAL</p>
+      <h1 data-i18n="guide.title">ABM Server MCP Guide</h1>
+      <p class="lead" data-i18n="guide.lead">
+        A complete integration guide for agents and MCP client maintainers. ABM connects a user's
+        own Chrome browser to MCP; browser actions run locally in the extension while the server
+        handles authentication, routing, and audit.
+      </p>
+      <div class="doc-meta">
+        <span data-i18n-html="meta.protocol">Protocol: Streamable HTTP</span>
+        <span data-i18n-html="meta.auth">Authentication: OAuth 2.1</span>
+        <span data-i18n-html="meta.endpoint">Endpoint: <code>{{ issuer_url }}/mcp</code></span>
+      </div>
+    </header>
+
+    <section id="quickstart">
+      <h2 data-i18n="quickstart.title">1. Quickstart</h2>
+      <h3 data-i18n="quickstart.install.title">1.1 Install the Chrome extension</h3>
+      <p data-i18n-html="quickstart.install.body">
+        The ABM extension is not yet on the Chrome Web Store. Download the latest ZIP from
+        <a href="{{ extension_release_url }}" target="_blank" rel="noreferrer">GitHub Releases</a>,
+        unzip it, enable Developer mode at <code>chrome://extensions</code>, then click
+        &quot;Load unpacked&quot; and select the extracted folder.
+      </p>
+      <h3 data-i18n="quickstart.register.title">1.2 Create an account</h3>
+      <p data-i18n-html="quickstart.register.body">
+        Register through the website, or call the public MCP endpoint with the
+        <code>account_register</code> tool:
+      </p>
+      <pre><code>POST {{ issuer_url }}/mcp/public
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+  "protocolVersion":"2025-03-26",
+  "capabilities":{},
+  "clientInfo":{"name":"agent","version":"1.0"}
+}}</code></pre>
+      <p data-i18n-html="quickstart.register.note">
+        The public endpoint exposes only <code>account_register</code>. If registration approval is
+        enabled, new accounts are <code>pending</code> and must be approved by an administrator in
+        the console.
+      </p>
+      <h3 data-i18n="quickstart.connect.title">1.3 Connect the browser extension</h3>
+      <ol>
+        <li data-i18n-html="quickstart.connect.step1">
+          Sign in to the <a href="/console">console</a>.
+        </li>
+        <li data-i18n="quickstart.connect.step2">
+          Create an API Key. The plaintext is shown only once, so save it immediately.
+        </li>
+        <li data-i18n-html="quickstart.connect.step3">
+          Open the extension options page, enter the server URL (for example
+          <code>{{ issuer_url }}</code>) and the API Key.
+        </li>
+        <li data-i18n="quickstart.connect.step4">
+          Click Connect and confirm the extension is online. OAuth-authenticated browser tools
+          acquire an exclusive connection through a browserSessionId.
+        </li>
+      </ol>
+    </section>
+
+    <section id="auth">
+      <h2 data-i18n="auth.title">2. Authentication</h2>
+      <h3 data-i18n="auth.oauth.title">2.1 OAuth 2.1 (recommended)</h3>
+      <p data-i18n-html="auth.oauth.body">
+        When an MCP client connects to <code>{{ issuer_url }}/mcp</code>, it receives
+        <code>401</code> and <code>WWW-Authenticate</code>. The client should read the protected
+        resource metadata, discover the authorization server, and complete dynamic client
+        registration, the PKCE authorization-code flow, and token exchange.
+      </p>
+      <pre><code><span data-i18n="auth.metadata.protected">Protected Resource Metadata</span>:
+{{ issuer_url }}/.well-known/oauth-protected-resource/mcp
+
+<span data-i18n="auth.metadata.server">Authorization Server Metadata</span>:
+{{ issuer_url }}/.well-known/oauth-authorization-server
+
+<span data-i18n="auth.metadata.scopes">Scopes</span>:
+browser         <span data-i18n="auth.scope.browser">Run browser tools through the extension</span>
+account:read    <span data-i18n="auth.scope.read">Read account, plan, and API key metadata</span>
+account:write   <span data-i18n="auth.scope.write">Create/revoke API keys and update account settings</span></code></pre>
+      <p data-i18n="auth.oauth.note">
+        The authorization flow opens the ABM sign-in page. After sign-in, a consent page shows the
+        client name, scopes, and browser connections this client may use. Browser tools acquire an
+        exclusive connection through a server-issued <code>browserSessionId</code>; a connection
+        already held by another task returns <code>ABM_CONNECTION_BUSY</code>.
+      </p>
+      <h3 data-i18n="auth.failure.title">2.2 Authentication failures</h3>
+      <p data-i18n-html="auth.failure.body">
+        Authentication failures return <code>401</code> with the following response header:
+      </p>
+      <pre><code>WWW-Authenticate: Bearer resource_metadata="{{ issuer_url }}/.well-known/oauth-protected-resource/mcp"</code></pre>
+    </section>
+
+    <section id="clients">
+      <h2 data-i18n="clients.title">3. MCP client configuration</h2>
+      <h3 data-i18n="clients.http.title">3.1 Generic HTTP configuration</h3>
+      <pre><code>{
+  "mcpServers": {
+    "abm": {
+      "type": "http",
+      "url": "{{ issuer_url }}/mcp"
+    }
+  }
+}</code></pre>
+    </section>
+
+    <section id="tools">
+      <h2 data-i18n="tools.title">4. Tool catalog</h2>
+      <h3 data-i18n="tools.browser.title">4.1 Browser tools</h3>
+      <p data-i18n-html="tools.browser.body">
+        All browser tools use the <code>browser_*</code> naming convention. They require the
+        <code>browser</code> scope and an online extension connection.
+      </p>
+      <div class="tool-grid">
+        <div><code>browser_inject_script</code><span data-i18n="tool.browser_inject_script">Run a script in the page's main world</span></div>
+        <div><code>browser_read_page_data</code><span data-i18n="tool.browser_read_page_data">Read data from a dotted window path</span></div>
+        <div><code>browser_navigate</code><span data-i18n="tool.browser_navigate">Navigate and reuse tabs</span></div>
+        <div><code>browser_control</code><span data-i18n="tool.browser_control">Query, update, activate, or close tabs</span></div>
+        <div><code>browser_extract_data</code><span data-i18n="tool.browser_extract_data">Extract element, window, or document data</span></div>
+        <div><code>browser_click</code><span data-i18n="tool.browser_click">Click an element</span></div>
+        <div><code>browser_fill</code><span data-i18n="tool.browser_fill">Fill an input or editable element</span></div>
+        <div><code>browser_keyboard</code><span data-i18n="tool.browser_keyboard">Send keyboard input</span></div>
+        <div><code>browser_upload_file</code><span data-i18n="tool.browser_upload_file">Inject a single base64 file</span></div>
+        <div><code>browser_set_files</code><span data-i18n="tool.browser_set_files">Inject multiple base64 files</span></div>
+        <div><code>browser_set_files_from_urls</code><span data-i18n="tool.browser_set_files_from_urls">Download and inject files from URLs</span></div>
+        <div><code>browser_wait_elements</code><span data-i18n="tool.browser_wait_elements">Wait for elements to reach a specified count</span></div>
+        <div><code>browser_set_video_to_page</code><span data-i18n="tool.browser_set_video_to_page">Inject a staged video</span></div>
+        <div><code>browser_download_video_from_url</code><span data-i18n="tool.browser_download_video_from_url">Download a video to extension staging</span></div>
+        <div><code>browser_network_intercept</code><span data-i18n="tool.browser_network_intercept">Capture network requests through CDP</span></div>
+        <div><code>browser_mouse_click</code><span data-i18n="tool.browser_mouse_click">Perform a CDP mouse click</span></div>
+        <div><code>browser_mouse_scroll</code><span data-i18n="tool.browser_mouse_scroll">Perform a CDP mouse-wheel scroll</span></div>
+        <div><code>browser_input_sequence</code><span data-i18n="tool.browser_input_sequence">Replay a CDP input event sequence</span></div>
+        <div><code>browser_set_files_native</code><span data-i18n="tool.browser_set_files_native">Inject files from local absolute paths</span></div>
+        <div><code>browser_stage_video</code><span data-i18n="tool.browser_stage_video">Stage and deliver a video</span></div>
+        <div><code>browser_send_notice</code><span data-i18n="tool.browser_send_notice">Push an extension notification</span></div>
+        <div><code>browser_open_session</code><span data-i18n="tool.browser_open_session">Open a browser task session</span></div>
+        <div><code>browser_close_session</code><span data-i18n="tool.browser_close_session">Close a browser task session</span></div>
+      </div>
+      <h3 data-i18n="tools.account.title">4.2 Account tools</h3>
+      <div class="tool-grid">
+        <div><code>account_register</code><span data-i18n="tool.account_register">Submit a registration request (public tool)</span></div>
+        <div><code>account_me</code><span data-i18n="tool.account_me">Read the current account and connection status</span></div>
+        <div><code>account_update_profile</code><span data-i18n="tool.account_update_profile">Update the display name</span></div>
+        <div><code>account_change_password</code><span data-i18n="tool.account_change_password">Change the password and revoke other credentials</span></div>
+        <div><code>api_key_list</code><span data-i18n="tool.api_key_list">List API Keys</span></div>
+        <div><code>api_key_create</code><span data-i18n="tool.api_key_create">Create an API Key (one-time plaintext)</span></div>
+        <div><code>api_key_revoke</code><span data-i18n="tool.api_key_revoke">Revoke an API Key</span></div>
+      </div>
+      <h3 data-i18n="tools.admin.title">4.3 Administrator tools</h3>
+      <p data-i18n="tools.admin.body">
+        Visible only to administrator accounts; the role is checked again on every call.
+      </p>
+      <div class="tool-grid">
+        <div><code>admin_list_users</code><span data-i18n="tool.admin_list_users">Filter accounts</span></div>
+        <div><code>admin_update_user</code><span data-i18n="tool.admin_update_user">Update status, plan, or notes</span></div>
+        <div><code>admin_get_settings</code><span data-i18n="tool.admin_get_settings">Read system settings</span></div>
+        <div><code>admin_update_settings</code><span data-i18n="tool.admin_update_settings">Update registration approval</span></div>
+        <div><code>admin_list_audit</code><span data-i18n="tool.admin_list_audit">Read audit events</span></div>
+      </div>
+    </section>
+
+    <section id="examples">
+      <h2 data-i18n="examples.title">5. Examples</h2>
+      <h3 data-i18n="examples.account.title">5.1 Read account information</h3>
+      <pre><code>{"jsonrpc":"2.0","id":10,"method":"tools/call","params":{
+  "name":"account_me",
+  "arguments":{}
+}}</code></pre>
+      <h3 data-i18n="examples.key.title">5.2 Create an API Key</h3>
+      <pre><code>{"jsonrpc":"2.0","id":11,"method":"tools/call","params":{
+  "name":"api_key_create",
+  "arguments":{"name":"<span data-i18n="examples.key.name">Agent browser</span>"}
+}}</code></pre>
+      <p data-i18n-html="examples.key.note">
+        The <code>plaintext</code> field in the response is shown only once; write it to the
+        extension or a secret manager immediately.
+      </p>
+      <h3 data-i18n="examples.browser.title">5.3 Browser actions</h3>
+      <pre><code>{"jsonrpc":"2.0","id":12,"method":"tools/call","params":{
+  "name":"browser_navigate",
+  "arguments":{"url":"https://example.com","reuse":"site"}
+}}</code></pre>
+    </section>
+
+    <section id="errors">
+      <h2 data-i18n="errors.title">6. Errors and recovery</h2>
+      <table class="doc-table">
+        <thead><tr><th data-i18n="errors.code">Error code</th><th data-i18n="errors.meaning">Meaning</th><th data-i18n="errors.action">Suggested action</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>ABM_INVALID_TOKEN</code></td>
+            <td data-i18n="error.ABM_INVALID_TOKEN.meaning">Missing, invalid, or expired OAuth token</td>
+            <td data-i18n="error.ABM_INVALID_TOKEN.action">Sign in and authorize again</td>
+          </tr>
+          <tr>
+            <td><code>ABM_SCOPE_REQUIRED</code></td>
+            <td data-i18n="error.ABM_SCOPE_REQUIRED.meaning">OAuth token is missing a required scope</td>
+            <td data-i18n="error.ABM_SCOPE_REQUIRED.action">Re-authorize and grant the required permissions</td>
+          </tr>
+          <tr>
+            <td><code>ABM_EXTENSION_OFFLINE</code></td>
+            <td data-i18n="error.ABM_EXTENSION_OFFLINE.meaning">No online extension connection</td>
+            <td data-i18n="error.ABM_EXTENSION_OFFLINE.action">Enter the key in the extension and connect</td>
+          </tr>
+          <tr>
+            <td><code>ABM_CONNECTION_BUSY</code></td>
+            <td data-i18n="error.ABM_CONNECTION_BUSY.meaning">The target browser connection is in use by another browser task</td>
+            <td data-i18n="error.ABM_CONNECTION_BUSY.action">Wait for the other task to finish or retry later</td>
+          </tr>
+          <tr>
+            <td><code>ABM_BROWSER_SESSION_REQUIRED</code></td>
+            <td data-i18n="error.ABM_BROWSER_SESSION_REQUIRED.meaning">A browser task handle is required</td>
+            <td data-i18n="error.ABM_BROWSER_SESSION_REQUIRED.action">Call browser_open_session first</td>
+          </tr>
+          <tr>
+            <td><code>ABM_BROWSER_SESSION_INVALID</code></td>
+            <td data-i18n="error.ABM_BROWSER_SESSION_INVALID.meaning">The browser task handle is invalid or expired</td>
+            <td data-i18n="error.ABM_BROWSER_SESSION_INVALID.action">Open a new browser session</td>
+          </tr>
+          <tr>
+            <td><code>ABM_KEY_LIMIT_REACHED</code></td>
+            <td data-i18n="error.ABM_KEY_LIMIT_REACHED.meaning">API Key limit for the plan reached</td>
+            <td data-i18n="error.ABM_KEY_LIMIT_REACHED.action">Revoke an old key or upgrade the plan</td>
+          </tr>
+          <tr>
+            <td><code>ABM_ACCOUNT_PENDING</code></td>
+            <td data-i18n="error.ABM_ACCOUNT_PENDING.meaning">Account is awaiting approval</td>
+            <td data-i18n="error.ABM_ACCOUNT_PENDING.action">Wait for administrator approval</td>
+          </tr>
+          <tr>
+            <td><code>ABM_ACCOUNT_DISABLED</code></td>
+            <td data-i18n="error.ABM_ACCOUNT_DISABLED.meaning">Account is disabled</td>
+            <td data-i18n="error.ABM_ACCOUNT_DISABLED.action">Contact an administrator</td>
+          </tr>
+          <tr>
+            <td><code>ABM_RATE_LIMITED</code></td>
+            <td data-i18n="error.ABM_RATE_LIMITED.meaning">Too many requests</td>
+            <td data-i18n="error.ABM_RATE_LIMITED.action">Wait according to retryAfter</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="security">
+      <h2 data-i18n="security.title">7. Security boundaries</h2>
+      <ul>
+        <li data-i18n="security.apiKey">
+          API Keys are stored only in extension local storage and as a server-side digest; they are
+          never exposed to page scripts.
+        </li>
+        <li data-i18n="security.oauth">
+          Dynamically registered OAuth clients use the PKCE public-client flow and are not issued a
+          client secret.
+        </li>
+        <li data-i18n="security.token">
+          OAuth tokens are stored only as SHA-256 digests and support expiry, revocation, and refresh
+          rotation.
+        </li>
+        <li data-i18n="security.browser">
+          Browser tools must run through the user's online extension; the server does not store
+          account passwords or page cookies.
+        </li>
+        <li data-i18n="security.admin">
+          Administrator actions create audit events; disabling an account revokes sessions and OAuth
+          tokens and closes the extension connection.
+        </li>
+        <li data-i18n-html="security.https">
+          Production deployments must use HTTPS and set <code>ABM_PUBLIC_BASE_URL</code> or
+          <code>ABM_OAUTH_ISSUER_URL</code>.
+        </li>
+      </ul>
+    </section>
+
+    <section id="troubleshooting">
+      <h2 data-i18n="troubleshooting.title">8. Troubleshooting</h2>
+      <h3 data-i18n="troubleshooting.login.title">MCP client does not open the sign-in page</h3>
+      <p data-i18n-html="troubleshooting.login.body">
+        Check that the client supports OAuth and Streamable HTTP, and confirm that <code>/mcp</code>
+        returns <code>401</code> with <code>WWW-Authenticate</code>. If the client only supports API
+        Keys, configure the Bearer header directly.
+      </p>
+      <h3 data-i18n="troubleshooting.offline.title">Browser tools report that the extension is offline</h3>
+      <p data-i18n="troubleshooting.offline.body">
+        OAuth sign-in only authenticates the MCP connection; browser tools still require an online
+        extension. Create an API Key in the console and connect from the extension, or verify that an
+        online connection already exists.
+      </p>
+      <h3 data-i18n="troubleshooting.token.title">Token is still invalid after authorization</h3>
+      <p data-i18n-html="troubleshooting.token.body">
+        Check the server clock, confirm that <code>ABM_OAUTH_ISSUER_URL</code> matches the URL used
+        by the client, and verify that the account status is <code>active</code>.
+      </p>
+    </section>
+  </article>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/guide.js?v={{ asset_version }}"></script>
+{% endblock %}

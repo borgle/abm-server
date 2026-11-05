@@ -1,0 +1,30 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.publishEyebrow">PUBLISH</p><h1 data-i18n="workspace.creationPublish">发布计划</h1><p data-i18n="workspace.publishLead">在浏览器打开平台编辑器，复制标题和正文，确认后由你点击发布。ABM 不会自动点击发布。</p></div>
+    <div class="ws-actions"><button class="ws-btn ws-btn-primary" type="button" id="publishCreate" data-i18n="workspace.newPublish">新建发布任务</button></div>
+  </div>
+  <div class="ws-grid-2 ws-publish-grid">
+    <article class="ws-card ws-table-card">
+      <div class="ws-filterbar"><span class="ws-hint" id="publishCount" style="margin:0">—</span></div>
+      <table class="ws-table ws-publish-table">
+        <thead><tr><th data-i18n="workspace.publishTask">任务</th><th data-i18n="workspace.platformLabel">平台</th><th data-i18n="workspace.statusColumn">状态</th><th data-i18n="workspace.createdAt">创建时间</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead>
+        <tbody id="publishBody"><tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody>
+      </table>
+    </article>
+    <aside class="ws-card ws-card-pad">
+      <div class="ws-card-head"><div><h2 data-i18n="workspace.publishGuideTitle">怎么发布</h2><p data-i18n="workspace.publishGuideLead">发布任务会占用一个前台标签组。</p></div></div>
+      <ol class="ws-flow ws-publish-flow">
+        <li><span>01</span><div><b data-i18n="workspace.publishStepOpen">打开编辑器</b><small data-i18n="workspace.publishStepOpenSub">在已登录的浏览器里打开平台编辑器。</small></div></li>
+        <li><span>02</span><div><b data-i18n="workspace.publishStepCopy">复制内容</b><small data-i18n="workspace.publishStepCopySub">复制标题和正文到编辑器。</small></div></li>
+        <li><span>03</span><div><b data-i18n="workspace.publishStepCheck">人工检查</b><small data-i18n="workspace.publishStepCheckSub">确认标签、封面和预览。</small></div></li>
+        <li><span>04</span><div><b data-i18n="workspace.publishStepDone">你点击发布</b><small data-i18n="workspace.publishStepDoneSub">填写发布链接并标记完成。</small></div></li>
+      </ol>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-publish.js?v={{ asset_version }}"></script>
+{% endblock %}

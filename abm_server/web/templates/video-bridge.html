@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/console" data-i18n="nav.console">控制台</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow" data-i18n="bridge.eyebrow">VIDEO BRIDGE</p>
+      <h1 data-i18n="bridge.title">视频字节桥</h1>
+      <p class="muted" data-i18n="bridge.lead">保持此页面打开，将服务端暂存的视频分片推送到当前扩展。</p>
+    </div>
+    <span id="bridge-state" class="badge" data-i18n="bridge.state.idle">未启动</span>
+  </section>
+
+  <section class="grid two">
+    <article class="panel">
+      <div class="panel-heading"><h2 data-i18n="bridge.settingsTitle">连接设置</h2></div>
+      <form id="bridge-form" class="stack">
+        <label>
+          <span data-i18n="bridge.apiKey">API Key</span>
+          <input id="bridge-key" type="password" autocomplete="off" required />
+        </label>
+        <label>
+          <span data-i18n="bridge.extensionId">扩展 ID</span>
+          <input id="bridge-extension" autocomplete="off" required />
+        </label>
+        <label class="switch-row">
+          <input id="bridge-auto" type="checkbox" checked />
+          <span data-i18n="bridge.autoPoll">自动轮询待投递视频</span>
+        </label>
+        <button class="button primary" type="submit" data-i18n="bridge.saveStart">保存并启动</button>
+      </form>
+      <p id="bridge-meta" class="hint" data-i18n="bridge.autoMeta">正在尝试从扩展自动获取连接信息…</p>
+      <p class="muted" style="margin-top:16px" data-i18n="bridge.localHint">
+        页面只在本机保存 API Key。扩展必须允许当前页面来源发送外部消息。
+      </p>
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading"><h2 data-i18n="bridge.jobsTitle">投递日志</h2></div>
+      <pre id="bridge-log" class="log">等待启动…</pre>
+    </article>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/video-bridge.js?v={{ asset_version }}"></script>
+{% endblock %}

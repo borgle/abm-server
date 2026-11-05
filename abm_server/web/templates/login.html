@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block nav %}
+  {% if edition.self_registration %}<a href="/register" data-i18n="nav.register">申请使用</a>{% endif %}
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="hero-card{% if social_providers | length <= 3 %} narrow{% endif %} auth-card">
+    <p class="eyebrow" data-i18n="login.eyebrow">WELCOME BACK</p>
+    <h1 data-i18n="login.title">登录控制台</h1>
+    <p class="muted" data-i18n="login.lead">管理账号、套餐以及连接浏览器所需的 API Key。</p>
+    {% if social_providers %}
+      <div class="social-login">
+        <div class="social-buttons{% if social_providers | length > 3 %} social-buttons-many{% endif %}">
+          {% for provider in social_providers %}
+            <a class="button social-button" href="/api/v1/auth/social/{{ provider.id }}/start?next={{ next | urlencode }}">
+              <span class="social-mark social-mark-{{ provider.id }}" aria-hidden="true">
+                {% if provider.id == "wechat" %}
+                  微
+                {% elif provider.id == "qq" %}
+                  QQ
+                {% elif provider.id == "google" %}
+                  G
+                {% elif provider.id == "github" %}
+                  GH
+                {% elif provider.id == "microsoft" %}
+                  <span></span><span></span><span></span><span></span>
+                {% else %}
+                  {{ provider.name[:1] }}
+                {% endif %}
+              </span>
+              <span data-i18n="social.provider.{{ provider.id }}">使用 {{ provider.name }} 登录</span>
+            </a>
+          {% endfor %}
+        </div>
+        {% if social_needs_email %}
+          <p class="hint social-email-hint" data-i18n="social.emailHint">
+            微信和 QQ 不返回邮箱地址；首次注册需要补充邮箱后才能创建账号。
+          </p>
+        {% endif %}
+        <div class="social-divider"><span data-i18n="social.divider">或使用邮箱登录</span></div>
+      </div>
+    {% endif %}
+    <form id="login-form" class="stack">
+      <label>
+        <span data-i18n="field.email">邮箱</span>
+        <input name="email" type="email" autocomplete="email" required />
+      </label>
+      <label>
+        <span data-i18n="field.password">密码</span>
+        <input name="password" type="password" autocomplete="current-password" required />
+      </label>
+      <button class="button primary" type="submit" data-i18n="login.submit">登录</button>
+    </form>
+    <p class="hint">
+      <a href="/forgot-password" data-i18n="login.forgot">忘记密码？</a>
+    </p>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/login.js?v={{ asset_version }}"></script>
+{% endblock %}

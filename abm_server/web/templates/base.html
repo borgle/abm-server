@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="{% block html_lang %}zh-CN{% endblock %}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block page_title %}{{ title }} · ABM（a browser mcp）{% endblock %}</title>
+    {% include "partials/lang_boot.html" %}
+    <link rel="stylesheet" href="/static/app.css?v={{ asset_version }}" />
+    {% block head %}{% endblock %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">ABM</span>
+        <span>a browser mcp</span>
+      </a>
+      <nav>
+        {% block nav %}{% endblock %}
+      </nav>
+    </header>
+    <main class="page">
+      <div id="notice" class="notice" hidden></div>
+      {% block content %}{% endblock %}
+    </main>
+    <script type="module" src="/static/api.js?v={{ asset_version }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
+

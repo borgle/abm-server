@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/console" data-i18n="nav.console">控制台</a>
+  <a href="/admin" class="active" data-i18n="nav.admin">管理后台</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+  <button id="logout-button" class="link-button" type="button" data-i18n="nav.logout">退出</button>
+{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow" data-i18n="admin.eyebrow">ADMINISTRATION</p>
+      <h1 data-i18n="admin.title">用户与审批</h1>
+      <p class="muted" data-i18n="admin.lead">审批账号、调整套餐并查看最近的账号操作。</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+      <a class="button small" href="/admin/overview" data-i18n="admin.newUi">新版界面</a>
+      <label class="switch-row">
+        <input id="approval-setting" type="checkbox" />
+        <span data-i18n="admin.requireApproval">注册必须审批</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading">
+      <h2 data-i18n="admin.users">用户</h2>
+      <select id="status-filter">
+        <option value="" data-i18n="admin.filterAll">全部状态</option>
+        <option value="pending" data-i18n="admin.status.pending">待审批</option>
+        <option value="active" data-i18n="admin.status.active">已启用</option>
+        <option value="rejected" data-i18n="admin.status.rejected">已拒绝</option>
+        <option value="disabled" data-i18n="admin.status.disabled">已停用</option>
+      </select>
+    </div>
+    <div id="user-list" class="list"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading">
+      <h2 data-i18n="admin.audit">最近审计</h2>
+      <button id="refresh-audit" class="button small" type="button" data-i18n="admin.refresh">刷新</button>
+    </div>
+    <div id="audit-list" class="list compact"></div>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/admin.js?v={{ asset_version }}"></script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.configEyebrow">CONFIGURATION</p><h1 data-i18n="workspace.navConfig">参数配置</h1><p data-i18n="workspace.configLead">按分组维护运行参数。密钥类配置仍由环境变量管理，不在此处读写。</p></div>
+    <div class="ws-actions">
+      <a class="ws-btn" href="/api/v1/admin/system/config/export" data-i18n="workspace.exportConfig">导出 JSON</a>
+      <button class="ws-btn" type="button" id="configImportTrigger" data-i18n="workspace.importConfig">导入 JSON</button>
+      <button class="ws-btn ws-btn-primary" type="button" id="configSave" data-i18n="workspace.saveConfig">保存配置</button>
+      <input type="file" id="configImportFile" accept="application/json,.json" hidden />
+    </div>
+  </div>
+  <div class="ws-stack" id="configGroups"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/admin-config.js?v={{ asset_version }}"></script>
+{% endblock %}

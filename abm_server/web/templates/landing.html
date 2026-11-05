@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% block body_class %}landing-page{% endblock %}
+{% block html_lang %}en{% endblock %}
+{% block page_title %}ABM · Connect your browser to AI agents{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="/static/landing.css?v={{ asset_version }}" />
+{% endblock %}
+{% block nav %}
+  <a href="#features" data-i18n="nav.features">Features</a>
+  <a href="#install" data-i18n="nav.install">Install</a>
+  <a href="#mcp" data-i18n="nav.mcp">MCP</a>
+  <a href="/docs/mcp" data-i18n="nav.guide">Guide</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+  {% if signed_in %}
+    <a class="button small primary" href="/console" data-i18n="nav.console">Console</a>
+  {% else %}
+    <a href="/login" data-i18n="nav.login">Sign in</a>
+    {% if edition.self_registration %}
+    <a class="button small primary" href="/register" data-i18n="nav.register">Request access</a>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <section class="landing-hero">
+    <div class="hero-rail" aria-hidden="true">ABM / 2026</div>
+
+    <div class="hero-head">
+      <div class="eyebrow-row">
+        <p class="eyebrow">ABM · a browser mcp</p>
+      </div>
+      <h1 data-i18n-html="hero.title">
+        Connect your own browser <br class="hero-break" />to AI agents, <em>securely.</em>
+      </h1>
+    </div>
+
+    <div class="hero-support">
+      <div class="hero-copy">
+        <p class="lead" data-i18n="hero.lead">
+          ABM connects a real browser through a Chrome extension, so MCP clients can open tabs,
+          read pages, fill forms, download files, and deliver videos without handing account
+          credentials to the model.
+        </p>
+        <div class="landing-actions">
+          <a class="button primary large" href="{{ extension_release_url }}" target="_blank" rel="noreferrer" data-i18n="hero.download">
+            Download Chrome extension
+          </a>
+          <a class="button large" href="/docs/mcp" data-i18n="hero.guide">Read the MCP guide</a>
+          {% if not signed_in and edition.self_registration %}
+            <a class="button ghost large" href="/register" data-i18n="hero.register">Request an account</a>
+          {% endif %}
+        </div>
+        <p class="muted small hero-note" data-i18n="hero.note">
+          The extension is not yet on the Chrome Web Store. Download the ZIP from GitHub Releases
+          and load it as an unpacked extension.
+        </p>
+      </div>
+
+      <div class="landing-hero-card">
+        <div class="terminal-window">
+          <div class="terminal-bar">
+            <span></span><span></span><span></span>
+            <em>mcp.config</em>
+          </div>
+          <pre><code>{
+  "mcpServers": {
+    "abm": {
+      "type": "http",
+      "url": "{{ issuer_url }}/mcp"
+    }
+  }
+}</code></pre>
+          <div class="terminal-foot">
+            <span>OAuth 2.1</span>
+            <span>Streamable HTTP</span>
+            <span>Browser policy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tool-marquee" aria-hidden="true">
+    <div class="tool-marquee-track">
+      <span>Navigate</span><span>Click</span><span>Fill</span><span>Extract</span>
+      <span>Upload</span><span>Network</span><span>Video</span><span>Audit</span>
+      <span>Navigate</span><span>Click</span><span>Fill</span><span>Extract</span>
+      <span>Upload</span><span>Network</span><span>Video</span><span>Audit</span>
+    </div>
+  </div>
+
+  <section id="features" class="landing-section">
+    <header class="section-head">
+      <div class="section-title">
+        <div class="eyebrow-row">
+          <p class="eyebrow" data-i18n="features.eyebrow">CAPABILITIES</p>
+          <span class="section-index" aria-hidden="true">01</span>
+        </div>
+        <h2 data-i18n-html="features.title">Real browser, real pages, real actions</h2>
+      </div>
+      <p class="section-note" data-i18n="features.lead">
+        Browser tools run in the extension on the user's machine. The server only handles routing,
+        authentication, and audit.
+      </p>
+    </header>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-icon">01</div>
+        <h3 data-i18n="features.tabs.title">Tabs &amp; navigation</h3>
+        <p data-i18n="features.tabs.body">
+          Create, switch, update, and close tabs, open URLs, and read the current page.
+        </p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">02</div>
+        <h3 data-i18n="features.dom.title">DOM &amp; interaction</h3>
+        <p data-i18n="features.dom.body">
+          Query and wait for elements, click, fill forms, type with the keyboard, and extract text.
+        </p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">03</div>
+        <h3 data-i18n="features.script.title">Scripts &amp; network</h3>
+        <p data-i18n="features.script.body">
+          Run scripts in the page's main world and intercept network requests through CDP.
+        </p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">04</div>
+        <h3 data-i18n="features.upload.title">Files &amp; uploads</h3>
+        <p data-i18n="features.upload.body">
+          Upload single files, multiple files, URL files, and local paths, including base64 assembly.
+        </p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">05</div>
+        <h3 data-i18n="features.video.title">Video delivery</h3>
+        <p data-i18n="features.video.body">
+          Receive base64 or URL videos, stage them, and inject them into page file inputs.
+        </p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon">06</div>
+        <h3 data-i18n="features.account.title">Accounts &amp; audit</h3>
+        <p data-i18n="features.account.body">
+          Registration approval, API Key limits, OAuth sign-in, administrator actions, and audit events.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="install" class="landing-section">
+    <header class="section-head">
+      <div class="section-title">
+        <div class="eyebrow-row">
+          <p class="eyebrow" data-i18n="install.eyebrow">GET STARTED</p>
+          <span class="section-index" aria-hidden="true">02</span>
+        </div>
+        <h2 data-i18n="install.title">Connect in three steps</h2>
+      </div>
+      <p class="section-note" data-i18n="install.lead">
+        From a downloaded ZIP to a live browser connection, in about two minutes.
+      </p>
+    </header>
+
+    <div class="install-grid" data-issuer-url="{{ issuer_url }}">
+      <div class="install-steps">
+        <ol class="step-list">
+          <li>
+            <strong data-i18n="install.step1.title">Install the extension</strong>
+            <span data-i18n-html="install.step1.body">
+              Download the latest ZIP from GitHub Releases, enable Developer mode at
+              <code>chrome://extensions</code>, and load the unpacked extension.
+            </span>
+          </li>
+          <li>
+            <strong data-i18n="install.step2.title">Register and create an API Key</strong>
+            <span data-i18n="install.step2.body">
+              Sign in to the console, create an API Key, enter the server URL and key in the extension
+              settings, and connect.
+            </span>
+          </li>
+          <li>
+            <strong data-i18n="install.step3.title">Configure your MCP client</strong>
+            <span data-i18n-html="install.step3.body">
+              In your MCP client, connect to <code>{issuer}/mcp</code> and sign in with OAuth.
+              The consent page lets you choose the allowed browser connections.
+            </span>
+          </li>
+        </ol>
+        <div class="landing-actions">
+          <a class="button primary" href="{{ extension_release_url }}" target="_blank" rel="noreferrer" data-i18n="install.download">
+            Get the latest release
+          </a>
+          {% if edition.self_registration %}<a class="button" href="/register" data-i18n="install.register">Create an account</a>{% endif %}
+        </div>
+      </div>
+
+      <aside class="install-card">
+        <div class="install-card-head">
+          <span>CHROME / LOAD UNPACKED</span>
+          <span class="install-step">05 STEPS</span>
+        </div>
+        <h3 data-i18n="install.cardTitle">Chrome loading steps</h3>
+        <ol>
+          <li data-i18n="install.cardStep1">Unzip the downloaded extension ZIP.</li>
+          <li data-i18n-html="install.cardStep2">Open <code>chrome://extensions</code>.</li>
+          <li data-i18n="install.cardStep3">Turn on Developer mode in the top-right corner.</li>
+          <li data-i18n="install.cardStep4">
+            Click "Load unpacked" and select the extracted folder.
+          </li>
+          <li data-i18n="install.cardStep5">
+            Open the extension options and enter the server URL and API Key.
+          </li>
+        </ol>
+        {% if extension_store_url %}
+          <a class="button small" href="{{ extension_store_url }}" target="_blank" rel="noreferrer">Chrome Web Store</a>
+        {% endif %}
+        <div class="install-card-foot">
+          <span>ZIP</span>
+          <span>Developer mode</span>
+          <span>Reload</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="mcp" class="landing-section">
+    <header class="section-head">
+      <div class="section-title">
+        <div class="eyebrow-row">
+          <p class="eyebrow" data-i18n="mcp.eyebrow">MCP CONNECTION</p>
+          <span class="section-index" aria-hidden="true">03</span>
+        </div>
+        <h2 data-i18n="mcp.title">OAuth with browser policy</h2>
+      </div>
+      <p class="section-note" data-i18n="mcp.lead">
+        The MCP client discovers the server and completes browser sign-in automatically. During
+        consent you choose a fixed browser or a pool of browser connections.
+      </p>
+    </header>
+
+    <div class="connection-grid">
+      <article class="connection-card">
+        <span class="tag recommended" data-i18n="mcp.recommended">Recommended</span>
+        <h3 data-i18n="mcp.oauth.title">OAuth 2.1 sign-in</h3>
+        <p data-i18n="mcp.oauth.body">
+          The client reads the protected-resource metadata, registers dynamically, and opens the ABM
+          sign-in page. After consent, no key needs to be copied manually.
+        </p>
+        <pre><code><span data-i18n="mcp.resourceLabel">Resource</span>: {{ issuer_url }}/mcp
+<span data-i18n="mcp.metadataLabel">Metadata</span>: {{ issuer_url }}/.well-known/oauth-protected-resource/mcp</code></pre>
+      </article>
+      <article class="connection-card">
+        <span class="tag" data-i18n="mcp.compatible">Isolation</span>
+        <h3 data-i18n="mcp.key.title">Browser task sessions</h3>
+        <p data-i18n="mcp.key.body">
+          A client can be fixed to one browser or allowed to use a pool. Each browser task gets a
+          server-issued browserSessionId so parallel work does not collide.
+        </p>
+        <pre><code>browser_open_session
+browser_navigate { browserSessionId }
+browser_close_session</code></pre>
+      </article>
+    </div>
+    <div class="landing-actions center">
+      <a class="button primary" href="/docs/mcp" data-i18n="mcp.guide">
+        Read the full installation and tool guide
+      </a>
+    </div>
+  </section>
+
+  <section class="landing-section final-cta">
+    <div class="cta-inner">
+      <div class="cta-head">
+        <div class="eyebrow-row">
+          <p class="eyebrow" data-i18n="cta.eyebrow">READY</p>
+          <span class="section-index" aria-hidden="true">04</span>
+        </div>
+        <h2 data-i18n-html="cta.title">Let agents operate your browser, not your passwords</h2>
+      </div>
+      <div class="cta-foot">
+        <p data-i18n="cta.body">
+          The extension handles browser execution. The server handles identity, permissions, and
+          connectivity. The two repositories deploy and upgrade independently.
+        </p>
+        <div class="landing-actions">
+          <a class="button primary large" href="{{ extension_release_url }}" target="_blank" rel="noreferrer" data-i18n="cta.download">
+            Download extension
+          </a>
+          <a class="button large" href="/docs/mcp" data-i18n="cta.guide">MCP guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/landing.js?v={{ asset_version }}"></script>
+{% endblock %}

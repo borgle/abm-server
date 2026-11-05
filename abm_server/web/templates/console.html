@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/console" class="active" data-i18n="nav.console">控制台</a>
+  <a id="admin-link" href="/admin" hidden data-i18n="nav.admin">管理后台</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+  <button id="logout-button" class="link-button" type="button" data-i18n="nav.logout">退出</button>
+{% endblock %}
+{% block content %}
+  <section class="page-heading console-heading" data-extension-id="{{ extension_id }}">
+    <div>
+      <p class="eyebrow" data-i18n="console.eyebrow">ACCOUNT</p>
+      <h1 id="account-title" data-i18n="console.title">我的账号</h1>
+      <p id="account-meta" class="muted" data-i18n="console.loading">正在读取账号信息…</p>
+      <div class="actions console-badges">
+        <span id="email-status" class="status offline" data-i18n="console.emailUnverified">邮箱未验证</span>
+        <span id="extension-status" class="status offline" data-i18n="console.extensionChecking">正在检查扩展…</span>
+        <span id="plan-badge" class="badge">—</span>
+      </div>
+    </div>
+    <div class="console-heading-actions">
+      <a class="button small" href="/console/overview" data-i18n="console.newUi">新版界面</a>
+      <a class="button small" href="/docs/mcp" data-i18n="console.guide">MCP 手册</a>
+      <button id="refresh-extension-status" class="button small" type="button" data-i18n="console.extensionRefresh">
+        刷新状态
+      </button>
+    </div>
+  </section>
+
+  <nav class="console-tabs" role="tablist" aria-label="Console sections">
+    <button type="button" class="active" data-console-tab="overview" data-i18n="console.tabOverview">概览</button>
+    <button type="button" data-console-tab="connect" data-i18n="console.tabConnect">连接</button>
+    <button type="button" data-console-tab="usage" data-i18n="console.tabUsage">用量</button>
+    <button type="button" data-console-tab="account" data-i18n="console.tabAccount">账号</button>
+  </nav>
+
+  <section class="console-panel" data-console-panel="overview">
+    <div class="grid two">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 data-i18n="console.keysTitle">API Key</h2>
+            <p class="muted" data-i18n="console.keysLead">
+              一把 Key 用于扩展连接；MCP 客户端使用 OAuth，视频桥由扩展换取短期令牌。
+            </p>
+          </div>
+          <span id="key-count" class="count">—</span>
+        </div>
+        <form id="create-key-form" class="inline-form">
+          <input
+            name="name"
+            data-i18n-placeholder="console.keyNamePlaceholder"
+            placeholder="Key 名称，例如：办公浏览器"
+            maxlength="120"
+            required
+          />
+          <button class="button primary" type="submit" data-i18n="console.create">创建</button>
+        </form>
+        <div id="new-key" class="secret-box" hidden>
+          <p><strong data-i18n="console.saveWarning">请立即保存这把 Key，关闭后无法再次查看完整内容。</strong></p>
+          <code id="new-key-value"></code>
+          <div class="actions">
+            <button id="copy-key-button" class="button" type="button" data-i18n="common.copy">复制</button>
+            <button
+              id="connect-extension-button"
+              class="button primary"
+              type="button"
+              data-i18n="console.connectExtension"
+            >
+              连接扩展
+            </button>
+          </div>
+        </div>
+        <div id="key-list" class="list"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 data-i18n="console.noticesTitle">通知</h2>
+            <p class="muted" data-i18n="console.noticesLead">账号、Key、配额和连接状态更新。</p>
+          </div>
+          <div class="actions">
+            <span id="notice-unread" class="count">—</span>
+            <button
+              id="read-all-notices"
+              class="button small"
+              type="button"
+              data-i18n="console.readAllNotices"
+            >
+              全部已读
+            </button>
+          </div>
+        </div>
+        <div id="account-notice-list" class="list"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="console-panel" data-console-panel="connect" hidden>
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2 data-i18n="console.agentTitle">连接你的 Agent</h2>
+          <p class="muted" data-i18n="console.agentLead">复制对应客户端的配置，首次连接会打开 ABM OAuth 授权页。</p>
+        </div>
+        <span class="status online" data-i18n="console.connectReady">一键连接已就绪</span>
+      </div>
+      <div class="stack">
+        <label>
+          <span data-i18n="console.agentClient">客户端</span>
+          <select id="agent-client">
+            <option value="generic">Generic HTTP MCP</option>
+            <option value="claude-code">Claude Code</option>
+            <option value="codex">Codex CLI</option>
+            <option value="cursor">Cursor / Windsurf</option>
+          </select>
+        </label>
+        <pre id="agent-config" class="log"></pre>
+        <div class="actions">
+          <button
+            id="copy-agent-config"
+            class="button"
+            type="button"
+            data-i18n="console.agentCopy"
+          >
+            复制配置
+          </button>
+        </div>
+        <p class="hint" data-i18n="console.agentHint">
+          远程 MCP 使用 OAuth，不需要把 API Key 填进客户端配置。
+        </p>
+      </div>
+    </article>
+
+    <article class="panel" style="margin-top: 24px">
+      <div class="panel-heading">
+        <div>
+          <h2 data-i18n="console.templatesTitle">工作流模板</h2>
+          <p class="muted" data-i18n="console.templatesLead">复制即用的 Agent 任务，把占位符换成你的地址和选择器。</p>
+        </div>
+      </div>
+      <div id="template-grid" class="template-grid"></div>
+    </article>
+  </section>
+
+  <section class="console-panel" data-console-panel="usage" hidden>
+    <article class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2 data-i18n="console.usageTitle">用量</h2>
+          <p class="muted" data-i18n="console.usageLead">按 API Key 统计浏览器工具调用和视频中转。</p>
+        </div>
+        <select id="usage-days" aria-label="Usage window">
+          <option value="7" data-i18n="console.usageDays7">7 days</option>
+          <option value="30" selected data-i18n="console.usageDays30">30 days</option>
+          <option value="90" data-i18n="console.usageDays90">90 days</option>
+        </select>
+      </div>
+      <div class="usage-cards">
+        <div class="usage-card">
+          <span data-i18n="console.usageToolCalls">工具调用</span>
+          <strong id="usage-tool-calls">—</strong>
+        </div>
+        <div class="usage-card">
+          <span data-i18n="console.usageVideoJobs">视频作业</span>
+          <strong id="usage-video-jobs">—</strong>
+        </div>
+        <div class="usage-card">
+          <span data-i18n="console.usageVideoBytes">视频中转</span>
+          <strong id="usage-video-bytes">—</strong>
+        </div>
+      </div>
+      <div id="usage-warning" class="quota-warning" hidden></div>
+      <div id="usage-quotas" class="quota-grid"></div>
+      <div id="usage-by-key" class="list"></div>
+    </article>
+  </section>
+
+  <section class="console-panel" data-console-panel="account" hidden>
+    <div class="grid two">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 data-i18n="console.passwordTitle">修改密码</h2>
+            <p class="muted" data-i18n="console.passwordLead">修改后会退出其他浏览器会话。</p>
+          </div>
+        </div>
+        <form id="password-form" class="stack">
+          <label>
+            <span data-i18n="field.currentPassword">当前密码</span>
+            <input name="current_password" type="password" autocomplete="current-password" required />
+          </label>
+          <label>
+            <span data-i18n="field.newPassword">新密码</span>
+            <input name="new_password" type="password" minlength="10" autocomplete="new-password" required />
+          </label>
+          <button class="button" type="submit" data-i18n="console.updatePassword">更新密码</button>
+        </form>
+        <div class="account-verify">
+          <p class="muted" data-i18n="console.emailLead">验证邮箱后可以接收安全提醒和密码重置邮件。</p>
+          <div class="actions">
+            <span id="email-status-account" class="status offline">—</span>
+            <button
+              id="verify-email-button"
+              class="button small"
+              type="button"
+              data-i18n="console.verifyEmail"
+            >
+              验证邮箱
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2 data-i18n="console.sessionsTitle">登录会话</h2>
+            <p class="muted" data-i18n="console.sessionsLead">查看并撤销其他浏览器或设备上的登录。</p>
+          </div>
+          <button
+            id="revoke-other-sessions"
+            class="button small"
+            type="button"
+            data-i18n="console.revokeOthers"
+          >
+            退出其他会话
+          </button>
+        </div>
+        <div id="session-list" class="list"></div>
+      </article>
+    </div>
+
+    <article class="panel" style="margin-top: 24px">
+      <div class="panel-heading">
+        <div>
+          <h2 data-i18n="console.identitiesTitle">登录方式</h2>
+          <p class="muted" data-i18n="console.identitiesLead">
+            绑定微信、QQ、Google、GitHub 或 Microsoft 后可以使用一键登录。社交注册的账号可在登录页通过忘记密码设置密码。
+          </p>
+        </div>
+        <span id="identity-count" class="count">—</span>
+      </div>
+      <div id="identity-list" class="list"></div>
+      <div id="identity-providers" class="social-buttons social-buttons-console"></div>
+    </article>
+
+    <article class="panel danger-panel" style="margin-top: 24px">
+      <div class="panel-heading">
+        <div>
+          <h2 data-i18n="console.dangerTitle">危险操作</h2>
+          <p class="muted" data-i18n="console.dangerLead">
+            删除账号会移除 API Key、登录会话、用量记录和 OAuth 凭证。
+          </p>
+        </div>
+        <div class="actions">
+          <button
+            id="export-account-button"
+            class="button small"
+            type="button"
+            data-i18n="console.exportAccount"
+          >
+            导出数据
+          </button>
+          <button
+            id="delete-account-button"
+            class="button danger"
+            type="button"
+            data-i18n="console.deleteAccount"
+          >
+            删除账号
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/console.js?v={{ asset_version }}"></script>
+{% endblock %}

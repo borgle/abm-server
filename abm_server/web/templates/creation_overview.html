@@ -1,0 +1,48 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div>
+      <p class="ws-eyebrow" data-i18n="workspace.creationEyebrow">CREATION STUDIO</p>
+      <h1 data-i18n="workspace.creationTitle">工作台</h1>
+      <p data-i18n="workspace.creationLead">从项目、素材和资产开始。检索与 AI 生成将在下一阶段接入。</p>
+    </div>
+    <div class="ws-actions">
+      <a class="ws-btn" href="/creation/assets" data-i18n="workspace.creationAssets">资产库</a>
+      <button class="ws-btn ws-btn-primary" type="button" id="creationNewAsset" data-i18n="workspace.createAsset">新建资产</button>
+    </div>
+  </div>
+  <div class="ws-metrics">
+    <article class="ws-metric"><span data-i18n="workspace.metricProjects">项目</span><b id="creationProjectCount">—</b><small data-i18n="workspace.metricProjectsSub">创作专题</small></article>
+    <article class="ws-metric"><span data-i18n="workspace.metricAssets">资产</span><b id="creationAssetCount">—</b><small data-i18n="workspace.metricAssetsSub">稿件与变体</small></article>
+    <article class="ws-metric"><span data-i18n="workspace.metricVersions">版本</span><b id="creationVersionCount">—</b><small data-i18n="workspace.metricVersionsSub">已保存的版本</small></article>
+    <article class="ws-metric"><span data-i18n="workspace.metricWords">字数</span><b id="creationWordCount">—</b><small data-i18n="workspace.metricWordsSub">当前主稿</small></article>
+  </div>
+  <article class="ws-card ws-card-pad">
+    <div class="ws-card-head"><div><h2 data-i18n="workspace.recentAssets">最近资产</h2><p data-i18n="workspace.recentAssetsLead">继续编辑或新建一份稿件。</p></div><a class="ws-text-link" href="/creation/assets" data-i18n="workspace.viewAll">全部</a></div>
+    <div id="creationRecentAssets"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+  </article>
+  <div class="ws-grid-2 ws-overview-lower">
+    <article class="ws-card ws-card-pad">
+      <div class="ws-card-head"><div><h2 data-i18n="workspace.flowTitle">创作流程</h2><p data-i18n="workspace.flowLead">从选题到发布，四个阶段。</p></div><a class="ws-text-link" href="/creation/radar" data-i18n="workspace.flowAction">去检索</a></div>
+      <ol class="ws-flow">
+        <li><span>01</span><div><b data-i18n="workspace.flowResearch">选题与采集</b><small id="creationFlowResearch">—</small></div></li>
+        <li><span>02</span><div><b data-i18n="workspace.status.draft">草稿</b><small id="creationFlowDraft">—</small></div></li>
+        <li><span>03</span><div><b data-i18n="workspace.status.review">待审</b><small id="creationFlowReview">—</small></div></li>
+        <li><span>04</span><div><b data-i18n="workspace.status.published">已发布</b><small id="creationFlowPublished">—</small></div></li>
+      </ol>
+    </article>
+    <article class="ws-card ws-card-pad">
+      <div class="ws-card-head"><div><h2 data-i18n="workspace.quickTitle">下一步</h2><p data-i18n="workspace.quickLead">常用入口。</p></div></div>
+      <div class="ws-quick-links">
+        <a href="/creation/radar"><span>01</span><b data-i18n="workspace.quickResearch">新建检索</b><small data-i18n="workspace.quickResearchSub">关键词 → 来源</small></a>
+        <a href="/creation/templates"><span>02</span><b data-i18n="workspace.quickTemplate">使用模板</b><small data-i18n="workspace.quickTemplateSub">检索 / 创作 / 发布</small></a>
+        <a href="/creation/studio"><span>03</span><b data-i18n="workspace.quickStudio">继续写作</b><small data-i18n="workspace.quickStudioSub">打开创作工坊</small></a>
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-overview.js?v={{ asset_version }}"></script>
+{% endblock %}

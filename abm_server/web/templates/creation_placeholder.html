@@ -1,0 +1,15 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.comingSoon">COMING SOON</p><h1 data-i18n="{{ page_key }}">{{ title }}</h1><p data-i18n="workspace.creationStageLead">这个页面将在创作台下一阶段接入。</p></div>
+    <div class="ws-actions"><a class="ws-btn" href="/creation/overview" data-i18n="workspace.backOverview">返回工作台</a></div>
+  </div>
+  <article class="ws-card ws-card-pad ws-placeholder">
+    <div class="ws-placeholder-mark">P0</div>
+    <h2 data-i18n="workspace.creationStageTitle">创作资产基础已就绪</h2>
+    <p data-i18n="workspace.creationStageBody">项目、资产、版本和手动编辑已经可用。检索、AI 生成、模板、回收站和发布将在后续阶段接入。</p>
+    <a class="ws-btn" href="/creation/assets" data-i18n="workspace.creationAssets">打开资产库</a>
+  </article>
+</section>
+{% endblock %}

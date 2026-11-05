@@ -1,0 +1,29 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.assetsEyebrow">ASSETS</p><h1 data-i18n="workspace.creationAssets">资产库</h1><p data-i18n="workspace.assetsLead">管理稿件、版本和平台变体。</p></div>
+    <div class="ws-actions"><button class="ws-btn ws-btn-primary" type="button" id="creationNewAsset" data-i18n="workspace.createAsset">新建资产</button></div>
+  </div>
+  <article class="ws-card ws-table-card">
+    <div class="ws-filterbar">
+      <input class="ws-input" id="creationAssetSearch" data-i18n-placeholder="workspace.searchAssets" placeholder="搜索资产…" aria-label="Search assets" />
+      <select class="ws-select" id="creationAssetStatus" aria-label="Status">
+        <option value="" data-i18n="workspace.allStatuses">全部状态</option>
+        <option value="draft" data-i18n="workspace.status.draft">草稿</option>
+        <option value="review" data-i18n="workspace.status.review">待审</option>
+        <option value="approved" data-i18n="workspace.status.approved">已定稿</option>
+        <option value="published" data-i18n="workspace.status.published">已发布</option>
+      </select>
+      <span class="ws-spacer"></span><span class="ws-hint" id="creationAssetCount" style="margin:0">—</span>
+    </div>
+    <table class="ws-table">
+      <thead><tr><th data-i18n="workspace.assetTitle">标题</th><th class="ws-hide-sm" data-i18n="workspace.platformLabel">平台</th><th data-i18n="workspace.statusColumn">状态</th><th class="ws-hide-sm" data-i18n="workspace.updatedLabel">更新时间</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead>
+      <tbody id="creationAssetsBody"><tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody>
+    </table>
+  </article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-assets.js?v={{ asset_version }}"></script>
+{% endblock %}

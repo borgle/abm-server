@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block head %}
+  <meta name="referrer" content="no-referrer" />
+{% endblock %}
+{% block nav %}
+  <a href="/login" data-i18n="nav.login">登录</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="hero-card narrow auth-card">
+    <p class="eyebrow" data-i18n="socialComplete.eyebrow">COMPLETE SIGN-UP</p>
+    <h1 data-i18n="socialComplete.title">完成 ABM 注册</h1>
+    <p class="muted" data-i18n="socialComplete.lead">
+      该登录方式没有提供邮箱地址，请补充邮箱完成注册。
+    </p>
+    <div id="social-complete-meta" class="social-complete-meta" hidden>
+      <span id="social-complete-mark" class="social-mark" aria-hidden="true"></span>
+      <span id="social-complete-provider"></span>
+    </div>
+    <form id="social-complete-form" class="stack" hidden>
+      <label>
+        <span data-i18n="field.email">邮箱</span>
+        <input
+          name="email"
+          type="email"
+          autocomplete="email"
+          maxlength="320"
+          required
+        />
+      </label>
+      <label>
+        <span data-i18n="field.displayName">显示名称</span>
+        <input
+          name="display_name"
+          maxlength="120"
+          autocomplete="name"
+          required
+        />
+      </label>
+      <p class="hint" data-i18n="socialComplete.emailHint">
+        请使用你能接收邮件的地址；该邮箱用于验证和密码找回。
+      </p>
+      <button class="button primary" type="submit" data-i18n="socialComplete.submit">
+        创建账号
+      </button>
+    </form>
+    <p id="social-complete-status" class="hint" hidden></p>
+    <p class="hint">
+      <a href="/login?next=%2Fconsole%23account" data-i18n="socialComplete.haveAccount">
+        已有账号？请先登录，再到控制台绑定该登录方式。
+      </a>
+    </p>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/social-complete.js?v={{ asset_version }}"></script>
+{% endblock %}

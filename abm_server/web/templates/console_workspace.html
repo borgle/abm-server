@@ -1,0 +1,255 @@
+{% extends "workspace.html" %}
+{% block content %}
+  {% if section == "overview" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.consoleEyebrow">ACCOUNT OVERVIEW</p>
+        <h1><span data-i18n="workspace.consoleGreeting">你好，</span>{{ display_name }}</h1>
+        <p data-i18n="workspace.consoleLead">账号、连接和用量概览。新版页面正在逐步迁移，旧版功能保持可用。</p>
+      </div>
+      <div class="ws-actions">
+        <a class="ws-btn" href="/docs/mcp" data-i18n="workspace.helpDocs">接入手册</a>
+        <a class="ws-btn ws-btn-primary" href="/console/connections" data-i18n="workspace.manageConnections">管理连接</a>
+      </div>
+    </div>
+
+    <div class="ws-metrics">
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricPlan">当前套餐</span>
+        <b id="wsPlan">—</b>
+        <small id="wsPlanMeta" data-i18n="workspace.loading">读取中…</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricKeys">有效 Key</span>
+        <b id="wsKeyCount">—</b>
+        <small data-i18n="workspace.metricKeysSub">用于扩展连接</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricExtension">浏览器连接</span>
+        <b id="wsExtension">—</b>
+        <small id="wsExtensionMeta" data-i18n="workspace.loading">读取中…</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricCalls">本月工具调用</span>
+        <b id="wsCalls">—</b>
+        <small id="wsCallsMeta" data-i18n="workspace.loading">读取中…</small>
+      </article>
+    </div>
+
+    <div class="ws-grid-2">
+      <article class="ws-card ws-card-pad">
+        <div class="ws-card-head">
+          <div><h2 data-i18n="workspace.accountStatus">账号状态</h2><p data-i18n="workspace.accountStatusLead">邮箱、连接和 Key 的当前状态。</p></div>
+          <span class="ws-status ws-status-ok" data-i18n="workspace.normal">正常</span>
+        </div>
+        <div class="ws-list">
+          <div class="ws-list-row">
+            <svg class="ws-ico ws-ico-sm" aria-hidden="true"><use href="#i-mail" /></svg>
+            <span><b id="wsEmail">—</b><small id="wsEmailMeta" data-i18n="workspace.loading">读取中…</small></span>
+            <span class="ws-pill" id="wsEmailStatus">—</span>
+          </div>
+          <div class="ws-list-row">
+            <span class="ws-dot" id="wsExtensionDot"></span>
+            <span><b id="wsExtensionName" data-i18n="workspace.extension">浏览器扩展</b><small id="wsExtensionText" data-i18n="workspace.loading">读取中…</small></span>
+            <a class="ws-text-link" href="/console/connections" data-i18n="workspace.view">查看</a>
+          </div>
+          <div class="ws-list-row">
+            <svg class="ws-ico ws-ico-sm" aria-hidden="true"><use href="#i-key" /></svg>
+            <span><b id="wsKeyText">—</b><small data-i18n="workspace.keySub">Key 只用于扩展 WebSocket</small></span>
+            <a class="ws-text-link" href="/console/connections" data-i18n="workspace.manage">管理</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="ws-card ws-card-pad">
+        <div class="ws-card-head">
+          <div><h2 data-i18n="workspace.usageTitle">本月用量</h2><p data-i18n="workspace.usageLead">工具调用和视频中转额度。</p></div>
+          <a class="ws-text-link" href="/console/usage" data-i18n="workspace.details">详情</a>
+        </div>
+        <div class="ws-quota" id="wsUsageQuota">
+          <div class="ws-quota-row"><span data-i18n="workspace.metricCalls">本月工具调用</span><b id="wsQuotaCalls">—</b></div>
+          <div class="ws-track"><i id="wsQuotaCallsBar" style="width: 0%"></i></div>
+          <div class="ws-quota-row"><span data-i18n="workspace.videoBytes">视频中转</span><b id="wsQuotaVideo">—</b></div>
+          <div class="ws-track"><i id="wsQuotaVideoBar" style="width: 0%"></i></div>
+        </div>
+        <p class="ws-hint" data-i18n="workspace.usageHint">更完整的采集、内置模型和存储用量将在 P3 迁移。</p>
+      </article>
+    </div>
+
+    <article class="ws-card ws-card-pad ws-migration">
+      <div class="ws-card-head">
+        <div><h2 data-i18n="workspace.p0Title">快捷入口</h2><p data-i18n="workspace.p0Lead">账号、连接和用量。</p></div>
+      </div>
+      <div class="ws-grid-3">
+        <a class="ws-link-card" href="/console/connections"><b data-i18n="workspace.connections">连接与 Key</b><span data-i18n="workspace.connectionsDesc">Key、扩展健康、Agent 配置</span></a>
+        <a class="ws-link-card" href="/console/usage"><b data-i18n="workspace.usage">用量与额度</b><span data-i18n="workspace.usageDesc">工具、采集、模型和存储</span></a>
+        <a class="ws-link-card" href="/console/account"><b data-i18n="workspace.security">账号与安全</b><span data-i18n="workspace.securityDesc">密码、会话、登录方式和危险操作</span></a>
+      </div>
+    </article>
+  </section>
+  {% elif section == "connections" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div><p class="ws-eyebrow" data-i18n="workspace.connectionsEyebrow">CONNECTIONS</p><h1 data-i18n="workspace.navConnections">连接与 Key</h1><p data-i18n="workspace.connectionsLead">Key 用于扩展连接，MCP 客户端使用 OAuth。每个 Key 对应一个浏览器连接。</p></div>
+      <div class="ws-actions"><a class="ws-btn" href="/docs/mcp" data-i18n="workspace.helpDocs">接入手册</a><button class="ws-btn ws-btn-primary" type="button" id="wsCreateKey" data-i18n="workspace.createKey">创建 Key</button></div>
+    </div>
+    <div class="ws-grid-2">
+      <div class="ws-stack">
+        <article class="ws-card ws-table-card">
+          <div class="ws-card-head" style="padding: 15px 15px 0"><div><h2 data-i18n="workspace.keysTitle">API Key</h2><p id="wsKeySummary" data-i18n="workspace.loading">读取中…</p></div><span class="ws-status ws-status-ok" id="wsKeyOnlineStatus" data-i18n="workspace.loading">读取中…</span></div>
+          <table class="ws-table">
+            <thead><tr><th data-i18n="workspace.keyName">名称</th><th data-i18n="workspace.keyStatus">状态</th><th data-i18n="workspace.keyPrefix">前缀</th><th data-i18n="workspace.lastUsed">最近使用</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead>
+            <tbody id="wsKeysBody"><tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody>
+          </table>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.agentTitle">连接 Agent</h2><p data-i18n="workspace.agentLead">首次连接会打开 OAuth 授权页，不需要把 Key 填进客户端。</p></div><span class="ws-pill">OAuth 2.1</span></div>
+          <div class="ws-tabs" id="wsAgentTabs" aria-label="Agent client">
+            <button type="button" class="on" data-agent="claude">Claude Code</button>
+            <button type="button" data-agent="codex">Codex CLI</button>
+            <button type="button" data-agent="cursor">Cursor</button>
+            <button type="button" data-agent="generic">Generic</button>
+          </div>
+          <div class="ws-code" id="wsAgentCode" style="margin-top: 10px"></div>
+          <div class="ws-actions" style="margin-top: 9px"><button class="ws-btn ws-btn-small" type="button" id="wsCopyAgent" data-i18n="workspace.copyConfig">复制配置</button></div>
+        </article>
+      </div>
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.extensionHealth">扩展健康</h2><p data-i18n="workspace.extensionHealthLead">当前浏览器连接的实时状态。</p></div><span class="ws-status ws-status-warn" id="wsExtensionBadge" data-i18n="workspace.loading">读取中…</span></div>
+          <div class="ws-list" id="wsExtensionList"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+          <button class="ws-btn ws-btn-small" type="button" id="wsRefreshExtension" style="width: 100%; margin-top: 12px" data-i18n="workspace.refreshStatus">刷新连接状态</button>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.newBrowser">连接新浏览器</h2><p data-i18n="workspace.newBrowserLead">三步完成，不影响现有连接。</p></div></div>
+          <div class="ws-steps">
+            <div class="ws-step"><span>1</span><b data-i18n="workspace.stepInstall">安装 ABM 扩展</b><small data-i18n="workspace.stepInstallLead">从 Chrome 商店或 GitHub Release 安装</small></div>
+            <div class="ws-step"><span>2</span><b data-i18n="workspace.stepKey">粘贴 API Key</b><small data-i18n="workspace.stepKeyLead">Key 只用于扩展 WebSocket 连接</small></div>
+            <div class="ws-step"><span>3</span><b data-i18n="workspace.stepVerify">验证连接</b><small data-i18n="workspace.stepVerifyLead">回到这里刷新，看到在线即可</small></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% elif section == "usage" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div><p class="ws-eyebrow" data-i18n="workspace.usageEyebrow">USAGE & LIMITS</p><h1 data-i18n="workspace.navUsage">用量与额度</h1><p data-i18n="workspace.usageConsoleLead">工具调用、视频中转、内置模型和创作存储的当前用量。</p></div>
+      <div class="ws-actions"><div class="ws-tabs" id="wsUsagePeriod" role="group" aria-label="Usage period"><button type="button" data-days="7">7 天</button><button type="button" data-days="30" class="on">30 天</button><button type="button" data-days="90">90 天</button></div></div>
+    </div>
+    <div class="ws-metrics">
+      <article class="ws-metric"><span data-i18n="workspace.metricCalls">本月工具调用</span><b id="wsUsageCalls">—</b><small id="wsUsageCallsMeta">—</small></article>
+      <article class="ws-metric"><span data-i18n="workspace.videoJobs">视频作业</span><b id="wsUsageJobs">—</b><small id="wsUsageJobsMeta">—</small></article>
+      <article class="ws-metric"><span data-i18n="workspace.videoBytes">视频中转</span><b id="wsUsageBytes">—</b><small id="wsUsageBytesMeta">—</small></article>
+      <article class="ws-metric"><span data-i18n="workspace.metricPlan">当前套餐</span><b id="wsUsagePlan">—</b><small id="wsUsagePlanMeta">—</small></article>
+    </div>
+    <div class="ws-grid-2">
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.quotaTitle">套餐额度</h2><p id="wsUsageReset" data-i18n="workspace.loading">读取中…</p></div></div>
+          <div class="ws-quota" id="wsUsageQuotas"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+        </article>
+        <article class="ws-card ws-table-card">
+          <div class="ws-card-head" style="padding: 14px 14px 0"><div><h2 data-i18n="workspace.byKey">按 Key 拆分</h2><p data-i18n="workspace.byKeyLead">定位每个连接的用量和异常。</p></div></div>
+          <table class="ws-table"><thead><tr><th data-i18n="workspace.keyName">Key</th><th data-i18n="workspace.metricCalls">工具调用</th><th data-i18n="workspace.videoJobs">视频作业</th><th data-i18n="workspace.videoBytes">视频中转</th></tr></thead><tbody id="wsUsageByKey"><tr><td colspan="4"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody></table>
+        </article>
+      </div>
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.usageWarnings">用量提醒</h2><p data-i18n="workspace.usageWarningsLead">达到 80% 时通过站内通知提醒。</p></div></div>
+          <div id="wsUsageWarnings"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.creationUsage">创作用量</h2><p data-i18n="workspace.creationUsageLead">创作台运行后在这里接入。</p></div><span class="ws-status ws-status-warn">未启用</span></div>
+          <div class="ws-empty" style="border:0; padding: 8px 0" data-i18n="workspace.creationUsageEmpty">检索页数、内置 token 和存储会在创作台启用后显示。</div>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% elif section == "account" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div><p class="ws-eyebrow" data-i18n="workspace.accountSecurityEyebrow">ACCOUNT & SECURITY</p><h1 data-i18n="workspace.navAccountSecurity">账号与安全</h1><p data-i18n="workspace.accountSecurityLead">管理个人资料、密码、登录会话和第三方身份。</p></div>
+      <div class="ws-actions"><span class="ws-status ws-status-ok" data-i18n="workspace.normal">正常</span><span class="ws-pill" id="wsAccountPlan">—</span></div>
+    </div>
+    <div class="ws-grid-2">
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.profile">个人资料</h2><p data-i18n="workspace.profileLead">显示名称会出现在通知和审计里。</p></div></div>
+          <div class="ws-list">
+            <div class="ws-list-row"><span class="ws-avatar" id="wsAccountAvatar">U</span><span><b id="wsAccountName">—</b><small id="wsAccountEmail">—</small></span><span class="right"><span id="wsAccountEmailStatus"></span><button class="ws-btn ws-btn-small" type="button" id="wsVerifyEmail" data-i18n="workspace.verifyEmail">验证邮箱</button></span></div>
+            <div class="ws-list-row"><span><b data-i18n="workspace.role">角色</b><small id="wsAccountRole">—</small></span></div>
+          </div>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.passwordTitle">修改密码</h2><p data-i18n="workspace.passwordLead">修改后会退出其他浏览器会话。</p></div></div>
+          <form id="wsPasswordForm" class="ws-form-grid" style="grid-template-columns: 1fr">
+            <label class="ws-field"><span data-i18n="workspace.currentPassword">当前密码</span><input class="ws-input" name="current_password" type="password" autocomplete="current-password" required /></label>
+            <label class="ws-field"><span data-i18n="workspace.newPassword">新密码</span><input class="ws-input" name="new_password" type="password" minlength="10" autocomplete="new-password" required /></label>
+            <button class="ws-btn ws-btn-small" type="submit" style="justify-self: start" data-i18n="workspace.updatePassword">更新密码</button>
+          </form>
+        </article>
+        <article class="ws-card ws-table-card">
+          <div class="ws-card-head" style="padding: 14px 14px 0"><div><h2 data-i18n="workspace.sessionsTitle">登录会话</h2><p id="wsSessionSummary">—</p></div><button class="ws-btn ws-btn-small ws-btn-danger" type="button" id="wsRevokeOtherSessions" data-i18n="workspace.revokeOthers">退出其他会话</button></div>
+          <table class="ws-table"><thead><tr><th data-i18n="workspace.device">设备</th><th data-i18n="workspace.lastSeen">最近活动</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead><tbody id="wsSessionsBody"><tr><td colspan="3"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody></table>
+        </article>
+      </div>
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.identitiesTitle">登录方式</h2><p data-i18n="workspace.identitiesLead">绑定后可以使用一键登录。</p></div><span class="ws-pill" id="wsIdentityCount">—</span></div>
+          <div class="ws-list" id="wsIdentityList"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+          <div class="ws-actions" id="wsIdentityProviders" style="margin-top: 10px"></div>
+        </article>
+        <article class="ws-card ws-card-pad" style="border-color: rgba(197,59,44,.3)">
+          <div class="ws-card-head"><div><h2 style="color: var(--danger)" data-i18n="workspace.dangerZone">危险操作</h2><p data-i18n="workspace.accountDangerLead">导出账号数据，或永久删除账号。</p></div></div>
+          <div class="ws-actions" style="justify-content: flex-start">
+            <button class="ws-btn ws-btn-small" type="button" id="wsExportAccount" data-i18n="workspace.exportData">导出数据</button>
+            <button class="ws-btn ws-btn-small ws-btn-danger" type="button" id="wsDeleteAccount" data-i18n="workspace.deleteAccount">删除账号</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% elif section == "help" %}
+  <section class="ws-page">
+    <div class="ws-page-head"><div><p class="ws-eyebrow" data-i18n="workspace.helpEyebrow">HELP</p><h1 data-i18n="workspace.navHelp">帮助与文档</h1><p data-i18n="workspace.helpLead">接入 MCP、排查连接问题和查看服务状态。</p></div><a class="ws-btn" href="/docs/mcp" data-i18n="workspace.openGuide">打开 MCP 手册</a></div>
+    <div class="ws-grid-3">
+      <article class="ws-card ws-card-pad"><div class="ws-card-head"><div><h2 data-i18n="workspace.mcpSetup">MCP 接入</h2><p data-i18n="workspace.mcpSetupLead">Claude Code、Codex、Cursor 的配置示例。</p></div></div><a class="ws-btn ws-btn-small" href="/console/connections" data-i18n="workspace.viewConfig">查看配置</a></article>
+      <article class="ws-card ws-card-pad"><div class="ws-card-head"><div><h2 data-i18n="workspace.troubleshooting">连接排查</h2><p data-i18n="workspace.troubleshootingLead">扩展离线、权限缺失、OAuth 失败。</p></div></div><a class="ws-btn ws-btn-small" href="/console/connections" data-i18n="workspace.checkConnection">检查连接</a></article>
+      <article class="ws-card ws-card-pad"><div class="ws-card-head"><div><h2 data-i18n="workspace.serviceStatus">服务状态</h2><p data-i18n="workspace.serviceStatusLead">静态展示，后续接入健康检查。</p></div></div><span class="ws-status ws-status-ok" data-i18n="workspace.normal">正常</span></article>
+    </div>
+  </section>
+  {% else %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.comingSoon">COMING SOON</p>
+        <h1 data-i18n="{{ page_key }}">{{ title }}</h1>
+        <p data-i18n="workspace.placeholderLead">这个页面已经接入新的壳和真实子路径，业务内容会在后续阶段迁移。</p>
+      </div>
+      <div class="ws-actions">
+        <a class="ws-btn" href="/console/overview" data-i18n="workspace.backOverview">返回概览</a>
+        <a class="ws-btn ws-btn-primary" href="/console" data-i18n="workspace.openOld">打开旧版</a>
+      </div>
+    </div>
+    <article class="ws-card ws-card-pad ws-placeholder">
+      <div class="ws-placeholder-mark">P0</div>
+      <h2 data-i18n="workspace.placeholderTitle">页面骨架已就绪</h2>
+      <p data-i18n="workspace.placeholderBody">新壳、侧栏、顶栏、语言切换和路由已经可用。当前功能请继续使用旧版控制台，迁移完成后这里会自动接替。</p>
+      <a class="ws-btn" href="/console" data-i18n="workspace.openOld">打开旧版控制台</a>
+    </article>
+  </section>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+  {% if section == "overview" %}
+  <script type="module" src="/static/workspace-console.js?v={{ asset_version }}"></script>
+  {% elif section == "connections" %}
+  <script type="module" src="/static/workspace-console-connections.js?v={{ asset_version }}"></script>
+  {% elif section == "usage" %}
+  <script type="module" src="/static/workspace-console-usage.js?v={{ asset_version }}"></script>
+  {% elif section == "account" %}
+  <script type="module" src="/static/workspace-console-account.js?v={{ asset_version }}"></script>
+  {% endif %}
+{% endblock %}

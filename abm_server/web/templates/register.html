@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/login" data-i18n="nav.haveAccount">已有账号</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="hero-card auth-card">
+    <p class="eyebrow" data-i18n="register.eyebrow">GET STARTED</p>
+    <h1 data-i18n="register.title">申请使用 ABM（a browser mcp）</h1>
+    <p class="muted" data-i18n="register.lead">提交申请后由管理员审核。审核通过后即可登录并创建自己的 API Key。</p>
+    {% if social_providers %}
+      <div class="social-login">
+        <div class="social-buttons{% if social_providers | length > 3 %} social-buttons-many{% endif %}">
+          {% for provider in social_providers %}
+            <a class="button social-button" href="/api/v1/auth/social/{{ provider.id }}/start?next={{ next | urlencode }}">
+              <span class="social-mark social-mark-{{ provider.id }}" aria-hidden="true">
+                {% if provider.id == "wechat" %}
+                  微
+                {% elif provider.id == "qq" %}
+                  QQ
+                {% elif provider.id == "google" %}
+                  G
+                {% elif provider.id == "github" %}
+                  GH
+                {% elif provider.id == "microsoft" %}
+                  <span></span><span></span><span></span><span></span>
+                {% else %}
+                  {{ provider.name[:1] }}
+                {% endif %}
+              </span>
+              <span data-i18n="social.register.provider.{{ provider.id }}">使用 {{ provider.name }} 注册</span>
+            </a>
+          {% endfor %}
+        </div>
+        <div class="social-divider"><span data-i18n="social.registerDivider">或使用邮箱申请</span></div>
+        <p class="hint" data-i18n="social.autoRegister">首次使用会自动创建账号；管理员开启审核时仍需审批。</p>
+        {% if social_needs_email %}
+          <p class="hint social-email-hint" data-i18n="social.emailHint">
+            微信和 QQ 不返回邮箱地址；首次注册需要补充邮箱后才能创建账号。
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+    <form id="register-form" class="stack">
+      <label>
+        <span data-i18n="field.email">邮箱</span>
+        <input name="email" type="email" autocomplete="email" required />
+      </label>
+      <label>
+        <span data-i18n="field.displayName">显示名称</span>
+        <input name="display_name" maxlength="120" autocomplete="name" required />
+      </label>
+      <label>
+        <span data-i18n="field.password">密码</span>
+        <input name="password" type="password" minlength="10" autocomplete="new-password" required />
+      </label>
+      <label>
+        <span data-i18n="register.useCase">使用场景</span>
+        <textarea name="application_note" maxlength="2000" rows="4"></textarea>
+      </label>
+      <button class="button primary" type="submit" data-i18n="register.submit">提交申请</button>
+    </form>
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/register.js?v={{ asset_version }}"></script>
+{% endblock %}

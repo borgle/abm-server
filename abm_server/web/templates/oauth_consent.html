@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block nav %}
+  <a href="/" data-i18n="nav.home">首页</a>
+  <a href="/docs/mcp" data-i18n="nav.guide">MCP 手册</a>
+  <div class="lang-switch" role="group" aria-label="Language / 语言">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+  </div>
+{% endblock %}
+{% block content %}
+  <section class="hero-card consent-card">
+    <p class="eyebrow" data-i18n="consent.eyebrow">MCP AUTHORIZATION</p>
+    {% if error %}
+      <h1 data-i18n="consent.errorTitle">授权请求无效</h1>
+      <p class="muted" data-i18n="consent.errorExpired">
+        授权请求不存在或已过期。请回到 MCP 客户端重新发起连接。
+      </p>
+      <div class="landing-actions">
+        <a class="button primary" href="/" data-i18n="consent.backHome">返回首页</a>
+      </div>
+    {% else %}
+      <h1>
+        <span data-i18n="consent.titleLead">授权</span>
+        {{ client_name }}
+      </h1>
+      <p class="muted" data-i18n="consent.lead">
+        客户端请求访问你的 ABM 账号。请确认这是你发起的连接。
+      </p>
+      <div class="consent-account">
+        <span class="consent-label" data-i18n="consent.accountLabel">当前账号</span>
+        <strong>{{ account_name }}</strong>
+        <span class="muted">{{ account_email }}</span>
+      </div>
+      <div class="consent-scopes">
+        <span class="consent-label" data-i18n="consent.scopesLabel">请求权限</span>
+        <ul>
+          {% for scope in scopes %}
+            <li>
+              <code>{{ scope.name }}</code>
+              <span data-scope="{{ scope.name }}">{{ scope.description }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div id="connection-section" class="consent-scopes" data-connection-count="{{ connections|length }}">
+        <span class="consent-label" data-i18n="consent.connectionsLabel">可操作的浏览器</span>
+        {% if connections %}
+          <label class="consent-choice">
+            <input type="radio" name="connectionMode" value="pinned" checked>
+            <span data-i18n="consent.pinOne">固定一个浏览器</span>
+          </label>
+          <select id="pinned-connection" class="consent-select">
+            {% for connection in connections %}
+              <option
+                value="{{ connection.id }}"
+                data-conn-name="{{ connection.name }}"
+                data-conn-prefix="{{ connection.prefix }}"
+                data-conn-online="{{ '1' if connection.online else '0' }}"
+              >
+                {{ connection.name }} · {{ connection.prefix }} · {{ "在线" if connection.online else "离线" }}
+              </option>
+            {% endfor %}
+          </select>
+          <label class="consent-choice">
+            <input type="radio" name="connectionMode" value="pool">
+            <span data-i18n="consent.pickMany">指定多个浏览器</span>
+          </label>
+          <div id="pool-connections" class="consent-options" hidden>
+            {% for connection in connections %}
+              <label class="consent-choice">
+                <input type="checkbox" name="connectionId" value="{{ connection.id }}">
+                <span
+                  class="connection-label"
+                  data-conn-name="{{ connection.name }}"
+                  data-conn-prefix="{{ connection.prefix }}"
+                  data-conn-online="{{ '1' if connection.online else '0' }}"
+                >{{ connection.name }} · {{ connection.prefix }} · {{ "在线" if connection.online else "离线" }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted small" data-i18n="consent.noConnections">
+            当前账号还没有 API Key。授权后仍可使用账号工具，但浏览器工具需要先在控制台创建 Key 并连接扩展。
+          </p>
+        {% endif %}
+      </div>
+      <form id="consent-form" class="stack" data-request-id="{{ request_id }}">
+        <div class="landing-actions">
+          <button class="button primary" type="submit" value="approve" data-i18n="consent.allow">允许授权</button>
+          <button class="button danger" type="submit" value="deny" data-i18n="consent.deny">拒绝</button>
+        </div>
+      </form>
+      <p class="muted small" data-i18n="consent.note">
+        授权后，MCP 客户端可以代表你调用上述权限范围内的工具。你可以随时在控制台或通过 MCP 工具吊销凭证。
+      </p>
+    {% endif %}
+  </section>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="/static/oauth-consent.js?v={{ asset_version }}"></script>
+{% endblock %}

@@ -1,0 +1,16 @@
+services:
+  server:
+    environment:
+      ABM_DATABASE_URL: sqlite+aiosqlite:////data/abm.db
+      ABM_EDITION: "single"
+      ABM_SESSION_COOKIE_SECURE: "false"
+      ABM_PUBLIC_BASE_URL: "http://127.0.0.1:${ABM_PORT:-18050}"
+      ABM_OAUTH_ISSUER_URL: "http://127.0.0.1:${ABM_PORT:-18050}"
+      ABM_EMAIL_MODE: "log"
+      ABM_REGISTRATION_REQUIRE_APPROVAL: "false"
+      ABM_BOOTSTRAP_ADMIN_EMAIL: "${ABM_BOOTSTRAP_ADMIN_EMAIL:-admin@localhost}"
+      ABM_BOOTSTRAP_ADMIN_PASSWORD: "${ABM_BOOTSTRAP_ADMIN_PASSWORD:-local-admin-password}"
+      ABM_QUOTA_ENFORCEMENT: "soft"
+      ABM_LOG_LEVEL: "info"
+    volumes:
+      - ./data:/data

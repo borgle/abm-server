@@ -1,0 +1,31 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.libraryEyebrow">SOURCES</p><h1 data-i18n="workspace.creationLibrary">素材库</h1><p data-i18n="workspace.libraryLead">来源正文保留 30 天，到期后进入回收站再保留 10 天。</p></div>
+    <div class="ws-actions"><a class="ws-btn" href="/creation/radar" data-i18n="workspace.creationRadar">选题雷达</a><button class="ws-btn ws-btn-primary" type="button" id="libraryRefresh" data-i18n="workspace.refresh">刷新</button></div>
+  </div>
+  <article class="ws-card ws-table-card">
+    <div class="ws-filterbar">
+      <input class="ws-input" id="librarySearch" data-i18n-placeholder="workspace.searchSources" placeholder="搜索来源…" aria-label="Search sources" />
+      <select class="ws-select" id="libraryKind" aria-label="Kind">
+        <option value="" data-i18n="workspace.allKinds">全部类型</option>
+        <option value="article" data-i18n="workspace.kindArticle">文章</option>
+        <option value="note" data-i18n="workspace.kindNote">笔记</option>
+      </select>
+      <span class="ws-spacer"></span>
+      <button class="ws-btn ws-btn-primary" type="button" id="libraryGenerate" disabled data-i18n="workspace.generateDraft">生成草稿</button>
+      <span class="ws-hint" id="librarySelected" style="margin:0"></span>
+      <span class="ws-hint" id="libraryJobFilter" style="margin:0"></span>
+      <span class="ws-hint" id="libraryCount" style="margin:0">—</span>
+    </div>
+    <table class="ws-table">
+      <thead><tr><th class="ws-check"><input type="checkbox" id="librarySelectAll" aria-label="Select all sources" data-i18n-aria-label="workspace.selectAll" /></th><th data-i18n="workspace.sourceTitle">来源</th><th class="ws-hide-sm" data-i18n="workspace.domain">域名</th><th data-i18n="workspace.credibility">可信度</th><th class="ws-hide-sm" data-i18n="workspace.words">字数</th><th class="ws-hide-sm" data-i18n="workspace.fetchedAt">采集时间</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead>
+      <tbody id="libraryBody"><tr><td colspan="7"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody>
+    </table>
+  </article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-library.js?v={{ asset_version }}"></script>
+{% endblock %}

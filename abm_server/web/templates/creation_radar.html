@@ -1,0 +1,64 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.radarEyebrow">RESEARCH</p><h1 data-i18n="workspace.creationRadar">选题雷达</h1><p data-i18n="workspace.radarLead">用已连接浏览器的公开页面检索选题，来源会保存到素材库。</p></div>
+    <div class="ws-actions"><a class="ws-btn" href="/creation/library" data-i18n="workspace.creationLibrary">素材库</a></div>
+  </div>
+
+  <div class="ws-grid-2">
+    <article class="ws-card ws-card-pad">
+      <div class="ws-card-head"><div><h2 data-i18n="workspace.newResearch">新建检索</h2><p data-i18n="workspace.newResearchLead">关键词决定查询计划，深度决定最多抓取多少页。</p></div></div>
+      <form id="radarForm" class="ws-form-grid">
+        <label class="ws-field ws-span-2"><span data-i18n="workspace.keywords">关键词</span><input class="ws-input" id="radarKeywords" placeholder="小户型收纳, 断舍离" autocomplete="off" /><small class="ws-hint" data-i18n="workspace.keywordsHint">多个关键词用逗号分隔，最多 5 个。</small></label>
+        <label class="ws-field"><span data-i18n="workspace.exclusions">排除词</span><input class="ws-input" id="radarExclusions" placeholder="广告, 课程" autocomplete="off" /></label>
+        <label class="ws-field"><span data-i18n="workspace.depth">采集深度</span>
+          <select class="ws-select" id="radarDepth">
+            <option value="quick" data-i18n="workspace.depthQuick">快速（10 页）</option>
+            <option value="standard" selected data-i18n="workspace.depthStandard">标准（30 页）</option>
+            <option value="deep" data-i18n="workspace.depthDeep">深度（80 页）</option>
+          </select>
+        </label>
+        <div class="ws-field ws-span-2">
+          <span data-i18n="workspace.engines">检索范围</span>
+          <div class="ws-check-grid" id="radarEngines">
+            <label><input type="checkbox" value="bing" checked /> 必应</label>
+            <label><input type="checkbox" value="baidu" checked /> 百度</label>
+            <label><input type="checkbox" value="duckduckgo" checked /> DuckDuckGo</label>
+            <label><input type="checkbox" value="google" /> Google</label>
+            <label><input type="checkbox" value="xiaohongshu" /> 小红书</label>
+          </div>
+          <small class="ws-hint" data-i18n="workspace.enginesHint">小红书需要先在已连接浏览器里登录。</small>
+        </div>
+        <div class="ws-span-2 ws-actions">
+          <button class="ws-btn ws-btn-primary" type="submit" id="radarStart" data-i18n="workspace.startResearch">开始检索</button>
+          <button class="ws-btn" type="button" id="radarDiagnostics" data-i18n="workspace.diagnose">测试扩展</button>
+          <span class="ws-hint" id="radarDiagResult" style="margin:0"></span>
+        </div>
+      </form>
+    </article>
+
+    <article class="ws-card ws-card-pad">
+      <div class="ws-card-head"><div><h2 data-i18n="workspace.recentJobs">最近检索</h2><p data-i18n="workspace.recentJobsLead">进行中的任务会优先显示。</p></div><span class="ws-hint" id="radarJobCount">—</span></div>
+      <div class="ws-list" id="radarJobs"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+    </article>
+  </div>
+
+  <article class="ws-card ws-card-pad" id="radarPanel" hidden>
+    <div class="ws-card-head"><div><h2 id="radarJobTitle">—</h2><p id="radarJobMeta">—</p></div><div class="ws-actions" id="radarJobActions"></div></div>
+    <div class="ws-progress" id="radarProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Research progress" data-i18n-aria-label="workspace.progressLabel"><span></span></div>
+    <div class="ws-attention" id="radarAttention" hidden></div>
+    <div class="ws-attention ws-attention-error" id="radarError" hidden></div>
+    <div class="ws-purline">
+      <span><b id="radarCollected">0</b> <span data-i18n="workspace.collected">已采集</span></span>
+      <span><b id="radarFailed">0</b> <span data-i18n="workspace.failedPages">失败</span></span>
+      <span><b id="radarQueries">0</b> <span data-i18n="workspace.queriesDone">查询</span></span>
+    </div>
+    <div class="ws-log" id="radarLog" aria-live="polite"></div>
+    <div class="ws-table-card"><table class="ws-table"><thead><tr><th data-i18n="workspace.sourceTitle">来源</th><th class="ws-hide-sm" data-i18n="workspace.domain">域名</th><th data-i18n="workspace.credibility">可信度</th><th class="ws-hide-sm" data-i18n="workspace.words">字数</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead><tbody id="radarSources"><tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.noSources">还没有来源。</div></td></tr></tbody></table></div>
+  </article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-radar.js?v={{ asset_version }}"></script>
+{% endblock %}

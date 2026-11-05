@@ -1,0 +1,19 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.trashEyebrow">RECYCLE BIN</p><h1 data-i18n="workspace.creationTrash">回收站</h1><p data-i18n="workspace.trashLead">回收站保留 10 天，恢复来源会重新计算保留期。</p></div>
+    <div class="ws-actions"><button class="ws-btn" type="button" id="trashRefresh" data-i18n="workspace.refresh">刷新</button><button class="ws-btn ws-btn-danger" type="button" id="trashEmpty" data-i18n="workspace.emptyTrash">清空回收站</button></div>
+  </div>
+  <article class="ws-card ws-table-card">
+    <div class="ws-filterbar"><span class="ws-hint" id="trashCount" style="margin:0">—</span></div>
+    <table class="ws-table">
+      <thead><tr><th class="ws-hide-sm" data-i18n="workspace.type">类型</th><th data-i18n="workspace.assetTitle">标题</th><th class="ws-hide-sm" data-i18n="workspace.trashReason">删除原因</th><th data-i18n="workspace.remainingDays">剩余天数</th><th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th></tr></thead>
+      <tbody id="trashBody"><tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr></tbody>
+    </table>
+  </article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-trash.js?v={{ asset_version }}"></script>
+{% endblock %}

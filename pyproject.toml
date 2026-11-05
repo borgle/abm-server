@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abm-browser-mcp-server"
+version = "0.1.0"
+description = "Python server for ABM（a browser mcp）"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+  "aiosqlite>=0.22,<1",
+  "alembic>=1.18,<2",
+  "argon2-cffi>=25,<26",
+  "asyncpg>=0.30,<1",
+  "cryptography>=46,<49",
+  "email-validator>=2.3,<3",
+  "fastapi>=0.139,<1",
+  "httpx>=0.28,<1",
+  "jinja2>=3.1,<4",
+  "markdown-it-py>=3,<4",
+  "pillow>=10,<13",
+  "mcp>=2.3,<3",
+  "pydantic-settings>=2.12,<3",
+  "python-multipart>=0.0.20,<1",
+  "sqlalchemy[asyncio]>=2.0.51,<3",
+  "uvicorn[standard]>=0.34,<1",
+]
+
+[project.optional-dependencies]
+render = [
+  "playwright>=1.50,<2",
+]
+s3 = [
+  "boto3>=1.35,<2",
+]
+dev = [
+  "pytest>=9,<10",
+  "pytest-asyncio>=1.2,<2",
+  "ruff>=0.14,<1",
+]
+
+[project.scripts]
+abm-server = "abm_server.main:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["abm_server*"]
+
+[tool.setuptools.package-data]
+abm_server = ["web/templates/*.html", "web/templates/partials/*.html", "web/static/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests", "tests_public"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008"]
+

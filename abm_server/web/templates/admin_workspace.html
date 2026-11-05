@@ -1,0 +1,369 @@
+{% extends "workspace.html" %}
+{% block content %}
+  {% if section == "overview" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.adminEyebrow">ADMINISTRATION</p>
+        <h1 data-i18n="workspace.adminTitle">系统概览</h1>
+        <p data-i18n="workspace.adminLead">账号审批、用户状态和最近操作。新版管理后台正在逐步迁移。</p>
+      </div>
+      <div class="ws-actions">
+        <a class="ws-btn" href="/admin/system" data-i18n="workspace.navSystem">系统设置</a>
+        {% if edition.approvals %}<a class="ws-btn ws-btn-primary" href="/admin/approvals" data-i18n="workspace.reviewApprovals">处理审批</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="ws-metrics">
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricPending">待审批</span>
+        <b id="wsPending">—</b>
+        <small data-i18n="workspace.metricPendingSub">注册申请等待处理</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricActive">活跃用户</span>
+        <b id="wsActive">—</b>
+        <small id="wsTotalMeta" data-i18n="workspace.loading">读取中…</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricApproval">注册审批</span>
+        <b id="wsApprovalMode">—</b>
+        <small data-i18n="workspace.metricApprovalSub">新账号是否需要批准</small>
+      </article>
+      <article class="ws-metric">
+        <span data-i18n="workspace.metricAudit">最近审计</span>
+        <b id="wsAuditCount">—</b>
+        <small data-i18n="workspace.metricAuditSub">最近加载的事件</small>
+      </article>
+    </div>
+
+    <div class="ws-grid-2">
+      <article class="ws-card ws-card-pad">
+        <div class="ws-card-head">
+          <div><h2 data-i18n="workspace.recentActivity">最近审计</h2><p data-i18n="workspace.recentActivityLead">账号和系统配置变更。</p></div>
+          {% if edition.audit %}<a class="ws-text-link" href="/admin/audit" data-i18n="workspace.viewAll">全部</a>{% endif %}
+        </div>
+        <div class="ws-list" id="wsAdminAudit">
+          <div class="ws-empty" data-i18n="workspace.loading">读取中…</div>
+        </div>
+      </article>
+
+      <article class="ws-card ws-card-pad">
+        <div class="ws-card-head">
+          <div><h2 data-i18n="workspace.p0AdminTitle">管理快捷入口</h2><p data-i18n="workspace.p0AdminLead">常用维护入口。</p></div>
+        </div>
+        <div class="ws-list">
+          {% if edition.admin_users %}<a class="ws-list-row ws-list-link" href="/admin/users"><span><b data-i18n="workspace.navUsers">用户</b><small data-i18n="workspace.usersDesc">搜索、筛选和用户详情将在 P1 迁移</small></span><span class="ws-text-link" data-i18n="workspace.open">打开</span></a>{% endif %}
+          {% if edition.approvals %}<a class="ws-list-row ws-list-link" href="/admin/approvals"><span><b data-i18n="workspace.navApprovals">审批</b><small data-i18n="workspace.approvalsDesc">审批队列将在 P1 迁移</small></span><span class="ws-text-link" data-i18n="workspace.open">打开</span></a>{% endif %}
+          <a class="ws-list-row ws-list-link" href="/admin/plans"><span><b data-i18n="workspace.navPlans">套餐与模型</b><small data-i18n="workspace.plansDesc">额度和模型绑定将在 P2 迁移</small></span><span class="ws-text-link" data-i18n="workspace.open">打开</span></a>
+        </div>
+      </article>
+    </div>
+  </section>
+  {% elif section == "users" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.usersEyebrow">USERS</p>
+        <h1 data-i18n="workspace.navUsers">用户</h1>
+        <p data-i18n="workspace.usersLead">搜索、筛选并查看用户。点击一行打开详情和操作。</p>
+      </div>
+      <div class="ws-actions">
+        <button class="ws-btn" type="button" id="wsExportUsers" data-i18n="workspace.exportCsv">导出 CSV</button>
+        {% if edition.approvals %}<a class="ws-btn ws-btn-primary" href="/admin/approvals" data-i18n="workspace.reviewApprovals">处理审批</a>{% endif %}
+      </div>
+    </div>
+    <article class="ws-card ws-table-card">
+      <div class="ws-filterbar">
+        <input class="ws-input" id="wsUserSearch" data-i18n-placeholder="workspace.searchUsers" placeholder="搜索姓名或邮箱…" aria-label="Search users" />
+        <select class="ws-select" id="wsUserStatus" aria-label="Status">
+          <option value="" data-i18n="workspace.allStatuses">全部状态</option>
+          <option value="pending" data-i18n="workspace.status.pending">待审批</option>
+          <option value="active" data-i18n="workspace.status.active">已启用</option>
+          <option value="disabled" data-i18n="workspace.status.disabled">已停用</option>
+          <option value="rejected" data-i18n="workspace.status.rejected">已拒绝</option>
+        </select>
+        <select class="ws-select" id="wsUserPlan" aria-label="Plan">
+          <option value="" data-i18n="workspace.allPlans">全部套餐</option>
+          <option value="free">Free</option>
+          <option value="pro">Pro</option>
+        </select>
+        <span class="ws-spacer"></span>
+        <span class="ws-hint" id="wsUserCount" style="margin: 0">—</span>
+      </div>
+      <table class="ws-table">
+        <thead>
+          <tr>
+            <th data-i18n="workspace.userColumn">用户</th>
+            <th data-i18n="workspace.statusColumn">状态</th>
+            <th data-i18n="workspace.planColumn">套餐</th>
+            <th data-i18n="workspace.usageColumn">本月用量</th>
+            <th data-i18n="workspace.joinedColumn">加入时间</th>
+            <th><span class="sr-only" data-i18n="workspace.actionsColumn">操作</span></th>
+          </tr>
+        </thead>
+        <tbody id="wsUsersBody">
+          <tr><td colspan="6"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr>
+        </tbody>
+      </table>
+      <div class="ws-table-foot">
+        <span id="wsUsersPageInfo">—</span>
+        <span class="ws-pager" id="wsUsersPager"></span>
+      </div>
+    </article>
+  </section>
+  {% elif section == "approvals" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.approvalsEyebrow">APPROVALS</p>
+        <h1 data-i18n="workspace.navApprovals">审批</h1>
+        <p data-i18n="workspace.approvalsLead">批准后账号立即可用；拒绝会保留申请记录。</p>
+      </div>
+      <div class="ws-actions">
+        <span class="ws-badge" id="wsPendingBadge">—</span>
+        <a class="ws-btn" href="/admin/system" data-i18n="workspace.approvalPolicy">审批策略</a>
+      </div>
+    </div>
+    <div class="ws-approval-grid" id="wsApprovalsGrid">
+      <div class="ws-empty" style="grid-column: 1 / -1" data-i18n="workspace.loading">读取中…</div>
+    </div>
+  </section>
+  {% elif section == "audit" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.auditEyebrow">AUDIT LOG</p>
+        <h1 data-i18n="workspace.navAudit">审计</h1>
+        <p data-i18n="workspace.auditLead">账号和系统配置变更。点击一行查看字段级前后值。</p>
+      </div>
+      <div class="ws-actions">
+        <button class="ws-btn" type="button" id="wsExportAudit" data-i18n="workspace.exportCsv">导出 CSV</button>
+      </div>
+    </div>
+    <article class="ws-card ws-table-card">
+      <div class="ws-filterbar">
+        <select class="ws-select" id="wsAuditEvent" aria-label="Event type">
+          <option value="" data-i18n="workspace.allEvents">全部事件</option>
+          <option value="ABM_ADMIN_USER_UPDATED">ABM_ADMIN_USER_UPDATED</option>
+          <option value="ABM_ADMIN_SETTINGS_UPDATED">ABM_ADMIN_SETTINGS_UPDATED</option>
+          <option value="ABM_ACCOUNT_LOGIN">ABM_ACCOUNT_LOGIN</option>
+          <option value="ABM_API_KEY_REVOKED">ABM_API_KEY_REVOKED</option>
+        </select>
+        <select class="ws-select" id="wsAuditRange" aria-label="Time range">
+          <option value="7" data-i18n="workspace.last7">最近 7 天</option>
+          <option value="30" selected data-i18n="workspace.last30">最近 30 天</option>
+          <option value="90" data-i18n="workspace.last90">最近 90 天</option>
+        </select>
+        <span class="ws-spacer"></span>
+        <span class="ws-hint" id="wsAuditCount" style="margin: 0">—</span>
+      </div>
+      <table class="ws-table">
+        <thead>
+          <tr>
+            <th data-i18n="workspace.timeColumn">时间</th>
+            <th data-i18n="workspace.eventColumn">事件</th>
+            <th data-i18n="workspace.actorColumn">操作者</th>
+            <th data-i18n="workspace.subjectColumn">对象</th>
+            <th data-i18n="workspace.summaryColumn">摘要</th>
+          </tr>
+        </thead>
+        <tbody id="wsAuditBody">
+          <tr><td colspan="5"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></td></tr>
+        </tbody>
+      </table>
+      <div class="ws-table-foot">
+        <span id="wsAuditPageInfo">—</span>
+        <span class="ws-pager" id="wsAuditPager"></span>
+      </div>
+    </article>
+  </section>
+  {% elif section == "plans" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.plansEyebrow">PLANS & MODELS</p>
+        <h1 data-i18n="workspace.navPlans">套餐与模型</h1>
+        <p data-i18n="workspace.plansLead">配置 free / pro 的创作额度和内置模型绑定。修改后下一笔生成生效。</p>
+      </div>
+      <div class="ws-actions">
+        <button class="ws-btn" type="button" id="wsTestAllProviders" data-i18n="workspace.testAll">测试全部连接</button>
+        <button class="ws-btn ws-btn-primary" type="button" id="wsSavePlans" data-i18n="workspace.saveConfig">保存配置</button>
+      </div>
+    </div>
+    <div class="ws-grid-2">
+      <div class="ws-stack">
+        <div class="ws-plan-grid" id="wsPlanGrid">
+          <article class="ws-card ws-plan-card" data-plan="free">
+            <div class="ws-plan-head"><div><h2>{% if edition.multi_user %}Free{% else %}<span data-i18n="workspace.localModelTitle">本机模型</span>{% endif %}</h2><p>{% if edition.multi_user %}<span data-i18n="workspace.planFreeLead">默认套餐 · 所有新账号</span>{% else %}<span data-i18n="workspace.localModelLead">绑定本机使用的对话与图片模型</span>{% endif %}</p></div><span class="ws-pill">{% if edition.multi_user %}Free{% else %}Local{% endif %}</span></div>
+            {% if edition.multi_user %}
+            <div class="ws-plan-fields">
+              <label class="ws-field">研究采集 / 月<input class="ws-input" data-field="researchPages" value="300" /></label>
+              <label class="ws-field">内置 token / 月<input class="ws-input" data-field="tokens" value="200000" /></label>
+              <label class="ws-field">生成次数 / 日<input class="ws-input" data-field="generations" value="100" /></label>
+              <label class="ws-field">存储 MB<input class="ws-input" data-field="storage" value="100" /></label>
+              <label class="ws-field">单图 MB<input class="ws-input" data-field="upload" value="5" /></label>
+            </div>
+            {% endif %}
+            <div class="ws-model-bind">
+              <div class="ws-plan-head" style="margin-bottom: 0"><div><h3 data-i18n="workspace.modelBinding">内置模型</h3><p data-i18n="workspace.modelBindingLead">选择连接和模型 ID。</p></div><span class="ws-status ws-status-warn" data-plan-status>—</span></div>
+              <label class="ws-field">连接<select class="ws-select" data-field="provider"></select></label>
+              <label class="ws-field">模型 ID<input class="ws-input" data-field="model" placeholder="deepseek-chat" /></label>
+              <label class="ws-field">备用模型<input class="ws-input" data-field="fallback" placeholder="可选" /></label>
+            </div>
+            <div class="ws-model-bind">
+              <div class="ws-plan-head" style="margin-bottom: 0"><div><h3 data-i18n="workspace.imageBinding">图片模型</h3><p data-i18n="workspace.imageBindingLead">OpenAI Images 兼容连接，用于封面与配图。</p></div></div>
+              <label class="ws-field">连接<select class="ws-select" data-field="imageProvider"></select></label>
+              <label class="ws-field">模型 ID<input class="ws-input" data-field="imageModel" placeholder="gpt-image-1" /></label>
+              <div class="ws-plan-fields">
+                <label class="ws-field">生图次数 / 日<input class="ws-input" data-field="imageGenerations" value="20" /></label>
+                <label class="ws-field">单次张数<input class="ws-input" data-field="imageMaxN" value="2" /></label>
+              </div>
+              {% if edition.multi_user %}
+              <div class="ws-plan-fields">
+                <label class="ws-field">浏览器连接数<input class="ws-input" data-field="browserConnections" value="2" /></label>
+                <label class="ws-field">每连接会话数<input class="ws-input" data-field="browserSessions" value="1" /></label>
+                <label class="ws-field">优先级保留位<input class="ws-input" data-field="reservedSlots" value="0" /></label>
+              </div>
+              {% endif %}
+            </div>
+          </article>
+          {% if edition.multi_user %}
+          <article class="ws-card ws-plan-card ws-plan-pro" data-plan="pro">
+            <div class="ws-plan-head"><div><h2>Pro</h2><p data-i18n="workspace.planProLead">付费套餐 · 管理员手动管理</p></div><span class="ws-badge">Pro</span></div>
+            <div class="ws-plan-fields">
+              <label class="ws-field">研究采集 / 月<input class="ws-input" data-field="researchPages" value="3000" /></label>
+              <label class="ws-field">内置 token / 月<input class="ws-input" data-field="tokens" value="2000000" /></label>
+              <label class="ws-field">生成次数 / 日<input class="ws-input" data-field="generations" value="500" /></label>
+              <label class="ws-field">存储 MB<input class="ws-input" data-field="storage" value="2048" /></label>
+              <label class="ws-field">单图 MB<input class="ws-input" data-field="upload" value="10" /></label>
+            </div>
+            <div class="ws-model-bind">
+              <div class="ws-plan-head" style="margin-bottom: 0"><div><h3 data-i18n="workspace.modelBinding">内置模型</h3><p data-i18n="workspace.modelBindingLead">选择连接和模型 ID。</p></div><span class="ws-status ws-status-warn" data-plan-status>—</span></div>
+              <label class="ws-field">连接<select class="ws-select" data-field="provider"></select></label>
+              <label class="ws-field">模型 ID<input class="ws-input" data-field="model" placeholder="deepseek-reasoner" /></label>
+              <label class="ws-field">备用模型<input class="ws-input" data-field="fallback" placeholder="可选" /></label>
+            </div>
+            <div class="ws-model-bind">
+              <div class="ws-plan-head" style="margin-bottom: 0"><div><h3 data-i18n="workspace.imageBinding">图片模型</h3><p data-i18n="workspace.imageBindingLead">OpenAI Images 兼容连接，用于封面与配图。</p></div></div>
+              <label class="ws-field">连接<select class="ws-select" data-field="imageProvider"></select></label>
+              <label class="ws-field">模型 ID<input class="ws-input" data-field="imageModel" placeholder="gpt-image-1" /></label>
+              <div class="ws-plan-fields">
+                <label class="ws-field">生图次数 / 日<input class="ws-input" data-field="imageGenerations" value="20" /></label>
+                <label class="ws-field">单次张数<input class="ws-input" data-field="imageMaxN" value="2" /></label>
+              </div>
+              <div class="ws-plan-fields">
+                <label class="ws-field">浏览器连接数<input class="ws-input" data-field="browserConnections" value="2" /></label>
+                <label class="ws-field">每连接会话数<input class="ws-input" data-field="browserSessions" value="1" /></label>
+                <label class="ws-field">优先级保留位<input class="ws-input" data-field="reservedSlots" value="0" /></label>
+              </div>
+            </div>
+          </article>
+          {% endif %}
+        </div>
+        {% if edition.multi_user %}
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.quotaNoteTitle">额度说明</h2><p data-i18n="workspace.quotaNoteLead">这些数值由管理员修改，不写死在代码里。</p></div><span class="ws-badge" data-i18n="workspace.effectiveNow">即时生效</span></div>
+          <div class="ws-empty" style="text-align: left; padding: 0; border: 0" data-i18n="workspace.quotaNoteBody">内置 token 只对平台模型生效；BYOK 不占此额度，但仍受生成次数限制。降低额度不会中断进行中的生成。</div>
+        </article>
+        {% endif %}
+      </div>
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.providersTitle">模型连接</h2><p data-i18n="workspace.providersLead">OpenAI 兼容连接，可绑定多个套餐。</p></div><button class="ws-btn ws-btn-small ws-btn-primary" type="button" id="wsAddProvider" data-i18n="workspace.addProvider">新增</button></div>
+          <div id="wsProvidersList"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.retentionTitle">数据保留</h2><p data-i18n="workspace.retentionLead">来源正文与回收站策略。</p></div><a class="ws-text-link" href="/admin/system" data-i18n="workspace.modify">修改</a></div>
+          <div class="ws-list">
+            <div class="ws-list-row"><span><b data-i18n="workspace.sourceRetention">来源正文保留</b><small data-i18n="workspace.sourceRetentionLead">到期后自动进入回收站</small></span><span class="ws-pill" id="wsPlanRetention">30 天</span></div>
+            <div class="ws-list-row"><span><b data-i18n="workspace.trashRetention">回收站保留</b><small data-i18n="workspace.trashRetentionLead">到期后彻底删除正文与引用</small></span><span class="ws-pill" id="wsPlanTrash">10 天</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% elif section == "system" %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.systemEyebrow">SYSTEM</p>
+        <h1 data-i18n="workspace.navSystem">系统设置</h1>
+        <p data-i18n="workspace.systemLead">注册策略、创作台开关、数据保留和通知。仅管理员可修改。</p>
+      </div>
+      <div class="ws-actions"><button class="ws-btn ws-btn-primary" type="button" id="wsSaveSystem" data-i18n="workspace.saveConfig">保存配置</button></div>
+    </div>
+    <div class="ws-grid-2">
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.registrationTitle">注册与访问</h2><p data-i18n="workspace.registrationLead">控制新用户如何进入系统。</p></div></div>
+          <div class="ws-switch-row"><span class="txt"><b data-i18n="workspace.requireApproval">注册必须审批</b><small data-i18n="workspace.requireApprovalLead">新账号进入 pending，管理员批准后才能登录</small></span><label class="ws-switch"><input type="checkbox" id="wsSysRegistration" aria-label="Require approval" /><i></i></label></div>
+          <div class="ws-switch-row"><span class="txt"><b data-i18n="workspace.publicRegister">公开 MCP 注册</b><small data-i18n="workspace.publicRegisterLead">允许 /mcp/public 调用 account_register</small></span><label class="ws-switch"><input type="checkbox" checked aria-label="Public registration" disabled /><i></i></label></div>
+          <div class="ws-switch-row"><span class="txt"><b data-i18n="workspace.socialLogin">社交登录</b><small data-i18n="workspace.socialLoginLead">微信、Google、GitHub 等一键登录</small></span><label class="ws-switch"><input type="checkbox" checked aria-label="Social login" disabled /><i></i></label></div>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.creationTitle">创作台</h2><p data-i18n="workspace.creationLead">模块开关与保留策略。</p></div><span class="ws-status ws-status-ok" id="wsCreationStatus" data-i18n="workspace.enabled">已启用</span></div>
+          <div class="ws-switch-row"><span class="txt"><b data-i18n="workspace.creationEnabled">创作台</b><small data-i18n="workspace.creationEnabledLead">检索、创作、资产和发布辅助</small></span><label class="ws-switch"><input type="checkbox" id="wsSysCreation" aria-label="Creation module" /><i></i></label></div>
+          <div class="ws-switch-row"><span class="txt"><b data-i18n="workspace.byokEnabled">允许 BYOK</b><small data-i18n="workspace.byokEnabledLead">用户可以接入自己的 OpenAI 兼容 Key</small></span><label class="ws-switch"><input type="checkbox" id="wsSysByok" aria-label="Allow BYOK" /><i></i></label></div>
+          <div class="ws-form-grid" style="margin-top: 10px">
+            <label class="ws-field"><span data-i18n="workspace.sourceRetention">来源正文保留</span><input class="ws-input" id="wsSysRetention" type="number" min="1" max="3650" value="30" /></label>
+            <label class="ws-field"><span data-i18n="workspace.trashRetention">回收站保留</span><input class="ws-input" id="wsSysTrash" type="number" min="1" max="365" value="10" /></label>
+          </div>
+        </article>
+      </div>
+      <div class="ws-stack">
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.serviceStatus">服务状态</h2><p data-i18n="workspace.serviceStatusLead">静态展示，后续接入健康检查。</p></div><span class="ws-status ws-status-ok" data-i18n="workspace.normal">正常</span></div>
+          <div class="ws-list">
+            <div class="ws-list-row"><span class="ws-dot ws-dot-on"></span><span><b>API</b><small>账号、MCP、OAuth</small></span><span class="ws-pill">正常</span></div>
+            <div class="ws-list-row"><span class="ws-dot ws-dot-on"></span><span><b data-i18n="workspace.extensionGateway">扩展网关</b><small>WebSocket abm/1</small></span><span class="ws-pill">正常</span></div>
+            <div class="ws-list-row"><span class="ws-dot"></span><span><b data-i18n="workspace.creationQueue">创作队列</b><small data-i18n="workspace.creationQueueLead">创作模块上线后启用</small></span><span class="ws-status ws-status-idle">未启用</span></div>
+          </div>
+        </article>
+        <article class="ws-card ws-card-pad">
+          <div class="ws-card-head"><div><h2 data-i18n="workspace.dangerZone">危险操作</h2><p data-i18n="workspace.dangerZoneLead">影响全系统的配置。</p></div></div>
+          <div class="ws-actions" style="justify-content: flex-start">
+            <button class="ws-btn ws-btn-small ws-btn-danger" type="button" id="wsDisableCreation" data-i18n="workspace.disableCreation">停用创作台</button>
+            <button class="ws-btn ws-btn-small ws-btn-danger" type="button" id="wsRotateKey" data-i18n="workspace.rotateKey">轮换内置模型 Key</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  {% else %}
+  <section class="ws-page">
+    <div class="ws-page-head">
+      <div>
+        <p class="ws-eyebrow" data-i18n="workspace.comingSoon">COMING SOON</p>
+        <h1 data-i18n="{{ page_key }}">{{ title }}</h1>
+        <p data-i18n="workspace.placeholderLead">这个页面已经接入新的壳和真实子路径，业务内容会在后续阶段迁移。</p>
+      </div>
+      <div class="ws-actions">
+        <a class="ws-btn" href="/admin/overview" data-i18n="workspace.backOverview">返回概览</a>
+        <a class="ws-btn ws-btn-primary" href="/admin" data-i18n="workspace.openOld">打开旧版</a>
+      </div>
+    </div>
+    <article class="ws-card ws-card-pad ws-placeholder">
+      <div class="ws-placeholder-mark">P0</div>
+      <h2 data-i18n="workspace.placeholderTitle">页面骨架已就绪</h2>
+      <p data-i18n="workspace.placeholderBody">新壳、侧栏、顶栏、语言切换和路由已经可用。当前功能请继续使用旧版管理后台，迁移完成后这里会自动接替。</p>
+      <a class="ws-btn" href="/admin" data-i18n="workspace.openOld">打开旧版管理后台</a>
+    </article>
+  </section>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+  {% if section == "overview" %}
+  <script type="module" src="/static/workspace-admin.js?v={{ asset_version }}"></script>
+  {% elif section == "users" %}
+  <script type="module" src="/static/workspace-admin-users.js?v={{ asset_version }}"></script>
+  {% elif section == "approvals" %}
+  <script type="module" src="/static/workspace-admin-approvals.js?v={{ asset_version }}"></script>
+  {% elif section == "audit" %}
+  <script type="module" src="/static/workspace-admin-audit.js?v={{ asset_version }}"></script>
+  {% elif section == "plans" %}
+  <script type="module" src="/static/workspace-admin-plans.js?v={{ asset_version }}"></script>
+  {% elif section == "system" %}
+  <script type="module" src="/static/workspace-admin-system.js?v={{ asset_version }}"></script>
+  {% endif %}
+{% endblock %}

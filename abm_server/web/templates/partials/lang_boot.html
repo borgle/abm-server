@@ -1,0 +1,41 @@
+<script>
+  // 在首屏绘制前按客户端语言准备页面，避免中文模板先闪现。
+  (function () {
+    var root = document.documentElement;
+    try {
+      var sourceLanguage = String(root.lang || "")
+        .toLowerCase()
+        .indexOf("en") === 0
+        ? "en"
+        : "zh";
+      var saved = window.localStorage.getItem("abm.lang");
+      var language = saved === "zh" || saved === "en" ? saved : "en";
+      if (saved !== "zh" && saved !== "en") {
+        var candidates = navigator.languages || [navigator.language || ""];
+        for (var index = 0; index < candidates.length; index += 1) {
+          var value = String(candidates[index] || "").toLowerCase();
+          if (value.indexOf("zh") === 0) {
+            language = "zh";
+            break;
+          }
+          if (value.indexOf("en") === 0) {
+            language = "en";
+            break;
+          }
+        }
+      }
+      root.lang = language === "zh" ? "zh-CN" : "en";
+      root.setAttribute("data-abm-lang", language);
+      if (language !== sourceLanguage) {
+        // 模板语言与目标语言不同：先隐藏原语言内容，翻译完成后再显示。
+        root.classList.add("abm-lang-booting");
+        document.title = "ABM · a browser mcp";
+        window.setTimeout(function () {
+          root.classList.remove("abm-lang-booting");
+        }, 2000);
+      }
+    } catch (error) {
+      root.classList.remove("abm-lang-booting");
+    }
+  })();
+</script>

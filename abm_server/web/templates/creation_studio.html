@@ -1,0 +1,59 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.studioEyebrow">COMPOSE</p><h1 id="creationStudioTitle">创作工坊</h1><p data-i18n="workspace.studioLead">手动编辑并保存版本；AI 生成将在下一阶段接入。</p></div>
+    <div class="ws-actions"><a class="ws-btn" href="/creation/assets" data-i18n="workspace.creationAssets">资产库</a><button class="ws-icon-btn ws-icon-btn-danger" type="button" id="creationDeleteAsset" aria-label="移入回收站" data-i18n-aria-label="workspace.moveToTrash"><svg class="ws-ico ws-ico-sm" aria-hidden="true"><use href="#i-trash" /></svg></button><button class="ws-btn ws-btn-primary" type="button" id="creationSaveVersion" data-i18n="workspace.saveVersion">保存版本</button></div>
+  </div>
+  <div class="ws-studio" id="creationStudio">
+    <div class="ws-studio-main">
+      <div class="ws-card ws-card-pad">
+        <label class="ws-field"><span data-i18n="workspace.assetTitle">标题</span><input class="ws-input" id="creationAssetTitle" placeholder="未命名稿件" /></label>
+        <div class="ws-studio-meta">
+          <label class="ws-field"><span data-i18n="workspace.platformLabel">平台</span><select class="ws-select" id="creationPlatform"><option value="master">主稿</option><option value="xiaohongshu">小红书</option><option value="wechat">公众号</option><option value="shipinhao">视频号</option><option value="zhihu">知乎</option></select></label>
+          <label class="ws-field"><span data-i18n="workspace.statusColumn">状态</span><select class="ws-select" id="creationStatus"><option value="draft" data-i18n="workspace.status.draft">草稿</option><option value="review" data-i18n="workspace.status.review">待审</option><option value="approved" data-i18n="workspace.status.approved">已定稿</option><option value="published" data-i18n="workspace.status.published">已发布</option></select></label>
+          <span class="ws-hint" id="creationVersionInfo" style="margin:0">—</span>
+        </div>
+        <div class="ws-field ws-editor-field" style="margin-top:12px">
+          <div class="ws-editor-head">
+            <span data-i18n="workspace.bodyLabel">正文</span>
+            <div class="ws-seg" role="tablist" aria-label="Body view">
+              <button class="ws-seg-btn" type="button" role="tab" id="creationBodyEditTab" aria-selected="true" aria-controls="creationBody" data-i18n="workspace.editTab">编辑</button>
+              <button class="ws-seg-btn" type="button" role="tab" id="creationBodyPreviewTab" aria-selected="false" aria-controls="creationPreview" data-i18n="workspace.previewTab">预览</button>
+            </div>
+          </div>
+          <textarea class="ws-input ws-editor" id="creationBody" rows="18" placeholder="开始写作…"></textarea>
+          <div class="ws-md-preview" id="creationPreview" role="tabpanel" aria-labelledby="creationBodyPreviewTab" hidden></div>
+        </div>
+      </div>
+    </div>
+    <aside class="ws-studio-side">
+      <div class="ws-card ws-card-pad">
+        <div class="ws-card-head"><div><h2 data-i18n="workspace.aiTitle">AI 草稿</h2><p data-i18n="workspace.regenerateLead">用最近一次素材重新生成本稿。</p></div></div>
+        <label class="ws-field"><span data-i18n="workspace.briefInstruction">补充要求</span><textarea class="ws-input" id="creationGenerateInstruction" rows="3"></textarea></label>
+        <button class="ws-btn ws-btn-primary" type="button" id="creationRegenerate" data-i18n="workspace.regenerate">重新生成</button>
+        <p class="ws-hint" id="creationGenerateInfo" style="margin-top:8px"></p>
+      </div>
+      <div class="ws-card ws-card-pad">
+        <div class="ws-card-head"><div><h2 data-i18n="workspace.mediaTitle">配图</h2><p data-i18n="workspace.mediaLead">生成封面或文中配图，绑定到当前版本。</p></div></div>
+        <div class="ws-media-cover" id="creationCoverBox"><span data-i18n="workspace.mediaEmpty">还没有封面</span></div>
+        <label class="ws-field"><span data-i18n="workspace.mediaPrompt">画面描述</span><textarea class="ws-input" id="creationMediaPrompt" rows="3" placeholder="例如：小户型玄关收纳，暖光，实拍感" data-i18n-placeholder="workspace.mediaPromptPlaceholder"></textarea></label>
+        <button class="ws-btn ws-btn-primary" type="button" id="creationMediaGenerate" data-i18n="workspace.mediaGenerate">生成封面</button>
+        <p class="ws-hint" id="creationMediaInfo" style="margin-top:8px"></p>
+        <div class="ws-media-grid" id="creationMediaGrid"></div>
+      </div>
+      <div class="ws-card ws-card-pad">
+        <div class="ws-card-head"><div><h2 data-i18n="workspace.exportTitle">导出排版</h2><p data-i18n="workspace.exportLead">公众号 HTML 或小红书图文卡片。</p></div></div>
+        <button class="ws-btn" type="button" id="creationExportOpen" data-i18n="workspace.exportOpen">打开导出</button>
+      </div>
+      <div class="ws-card ws-card-pad">
+        <div class="ws-card-head"><div><h2 data-i18n="workspace.versionsTitle">版本</h2><p data-i18n="workspace.versionsLead">每次保存都会创建新版本。</p></div></div>
+        <div class="ws-list" id="creationVersions"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-studio.js?v={{ asset_version }}"></script>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "workspace.html" %}
+{% block content %}
+<section class="ws-page">
+  <div class="ws-page-head">
+    <div><p class="ws-eyebrow" data-i18n="workspace.templatesEyebrow">TEMPLATES</p><h1 data-i18n="workspace.creationTemplates">模板库</h1><p data-i18n="workspace.templatesLead">模板只预填参数，创建任务或资产前仍由你确认。</p></div>
+    <div class="ws-actions"><a class="ws-btn" href="/creation/assets" data-i18n="workspace.creationAssets">资产库</a></div>
+  </div>
+  <div class="ws-filterbar" id="templateCategories" role="group" aria-label="Template category"></div>
+  <div class="ws-template-grid" id="templateGrid"><div class="ws-empty" data-i18n="workspace.loading">读取中…</div></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="/static/creation-templates.js?v={{ asset_version }}"></script>
+{% endblock %}
