@@ -11,8 +11,6 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY abm_server ./abm_server
-COPY alembic.ini ./
-COPY alembic ./alembic
 
 RUN python -m pip install ".[render,s3]" \
     && python -m playwright install --with-deps chromium \
