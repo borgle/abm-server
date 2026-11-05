@@ -1,5 +1,5 @@
 # ABM Server 使用场景示例
-> ????????? core???????????????????????
+> 范围：开源单用户版 core。托管版的多用户、套餐、审批、计费不在本仓库。
 
 > 本文给出可直接照做的端到端场景。工具名、参数和错误码以 [architecture.md](architecture.md) 为准；链路细节见 [data-flow.md](data-flow.md)。
 
@@ -22,7 +22,7 @@ export ABM_BOOTSTRAP_ADMIN_EMAIL="admin@example.com"
 export ABM_BOOTSTRAP_ADMIN_PASSWORD="change-me-please"
 export ABM_SESSION_COOKIE_SECURE="true"
 
-python -m alembic upgrade head
+abm-server-migrate
 abm-server
 ```
 
@@ -627,7 +627,7 @@ MCP 管理员工具：
 
 ## 16. 最小验收清单
 
-- [ ] 空库 `alembic upgrade head` 成功。
+- [ ] 空库 `abm-server-migrate` 成功。
 - [ ] 注册 → 审批 → 登录成功。
 - [ ] 创建 Key，扩展连接成功。
 - [ ] MCP OAuth pinned 可以调用 `account_me`。

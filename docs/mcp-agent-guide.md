@@ -1,5 +1,5 @@
 # ABM Server MCP 安装使用手册
-> ????????? core???????????????????????
+> 范围：开源单用户版 core。托管版的多用户、套餐、审批、计费不在本仓库。
 
 面向 Agent、MCP 客户端维护者和自动化集成方。ABM（a browser mcp）把用户自己的 Chrome 浏览器接入 MCP：浏览器工具由浏览器扩展在本机执行，服务端负责认证、授权、路由和审计。
 
@@ -23,7 +23,7 @@
 ABM 扩展尚未上架 Chrome Web Store。请从 GitHub Releases 下载最新 ZIP：
 
 ```text
-https://github.com/borgle/browser-mcp-extension/releases/latest
+https://github.com/borgle/abm-extension/releases/latest
 ```
 
 解压后：
@@ -365,7 +365,7 @@ OAuth 登录只解决 MCP 认证，浏览器工具仍需要扩展在线。请在
 
 ```bash
 python -m pip install -e ".[dev]"
-python -m alembic upgrade head
+abm-server-migrate
 python -m pytest
 abm-server
 ```

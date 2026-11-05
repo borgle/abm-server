@@ -1,5 +1,5 @@
 # ABM 创作台（Creation Studio）设计方案
-> ????????? core???????????????????????
+> 范围：开源单用户版 core。托管版的多用户、套餐、审批、计费不在本仓库。
 
 > 状态：**部分实现** · 2026-11-02
 >
@@ -8,7 +8,7 @@
 >
 > 配套原型：[`prototypes/creation-studio.html`](prototypes/creation-studio.html)
 >
-> 本文定义新增的创作模块。合入实现前，需按 `AGENTS.md` 的协议流程，把最终契约合并进 `architecture.md`、`data-flow.md`、`scenarios.md` 和 `development-plan.md`。
+> 本文定义新增的创作模块。合入实现前，需按 `AGENTS.md` 的协议流程，把最终契约合并进 `architecture.md`、`data-flow.md` 和 `scenarios.md`。
 >
 > **已确认（2026-10-29）**：内置模型由管理员配置 OpenAI 兼容连接并绑定 free / pro，额度和模型均不写死；BYOK 作为高级选项；只做「填充 + 人工发布」；首期必应 / 百度 / DuckDuckGo / Google 通用搜索 + 正文提取 + 小红书适配器；所有套餐可用并按额度限制；来源正文 30 天后自动进入回收站，再保留 10 天，最后彻底删除；用户手动删除的资产同样保留 10 天，恢复后重新计算 30 天；删除账号全部清理；系统配置仅 `admin` 可操作。
 
@@ -1297,7 +1297,7 @@ AI 生成内容标识：
 | 内容 | 状态 |
 |---|---|
 | 模型：`creation_projects`、`creation_assets`、`creation_asset_versions` | 完成 |
-| 迁移 `alembic/versions/20261030_0011_creation_core.py`（空库可执行） | 完成 |
+| 迁移 `abm_server/migrations/versions/20261030_0011_creation_core.py`（空库可执行） | 完成 |
 | 项目 CRUD、资产 CRUD、版本快照 | 完成 |
 | `/api/v1/creation/platforms`、`/projects`、`/assets`、`/assets/{id}/versions` | 完成 |
 | 应用切换、项目选择器（`localStorage` 记忆） | 完成 |
@@ -1319,7 +1319,7 @@ AI 生成内容标识：
 python -m ruff check .
 python -m ruff format --check .
 python -m pytest                  # 98 passed
-python -m alembic upgrade head    # 空库执行到 20261030_0011
+abm-server-migrate                # 空库执行到 20261030_0011
 ```
 
 `/creation/overview`、`/creation/assets`、`/creation/studio` Lighthouse：Accessibility / Best Practices / SEO = 100，Performance 98–99。
@@ -1352,7 +1352,7 @@ python -m alembic upgrade head    # 空库执行到 20261030_0011
 ```bash
 python -m ruff check .
 python -m pytest                    # 110 passed
-python -m alembic upgrade head      # 空库执行到 20261030_0012
+abm-server-migrate                  # 空库执行到 20261030_0012
 ```
 
 `/creation/radar`、`/creation/library`、`/creation/templates`、`/creation/trash` Lighthouse：Accessibility / Best Practices / SEO = 100。

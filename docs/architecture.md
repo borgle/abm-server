@@ -1,7 +1,7 @@
 # ABM（a browser mcp） 架构设计
-> ????????? core???????????????????????
+> 范围：开源单用户版 core。托管版的多用户、套餐、审批、计费不在本仓库。
 
-> 文档地图：[详细设计](detailed-design.md) · [数据流](data-flow.md) · [使用场景](scenarios.md) · [开发计划](development-plan.md) · [MCP 接入指南](mcp-agent-guide.md)
+> 文档地图：[详细设计](detailed-design.md) · [数据流](data-flow.md) · [使用场景](scenarios.md) · [MCP 接入指南](mcp-agent-guide.md)
 >
 > 本文是系统契约层，定义目标架构、边界和公开协议；实现细节、时序图和操作示例分别在上述文档中展开。
 
@@ -1251,7 +1251,7 @@ flowchart TB
 - 健康检查访问 `/healthz`。
 - 实时 WebSocket 路由不依赖独立 worker 进程。
 
-使用 PostgreSQL 时，将 `ABM_DATABASE_URL` 设置为 `postgresql+asyncpg` 地址，并执行同一套 Alembic 变更。
+使用 PostgreSQL 时，将 `ABM_DATABASE_URL` 设置为 `postgresql+asyncpg` 地址，并执行 `abm-server-migrate`。
 
 ## 23. 测试策略
 
