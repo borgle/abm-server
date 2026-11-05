@@ -116,14 +116,14 @@ Docker 镜像已内置 Chromium 和 Noto Sans CJK 字体，并默认开启
 
 单用户版保留登录，首次启动用 `ABM_BOOTSTRAP_ADMIN_*` 创建唯一管理员；社交登录会自动关闭。多租户、套餐、计费、用户管理属于私有 cloud 发行物，不在公开代码里。
 
-`ABM_EDITION` 只选择行为档位：公开构建默认 `single`，设成 `hosted` 会因为缺少 `abm_server.cloud` 而启动失败；托管镜像才会带这个私有包。
+`ABM_EDITION` 只选择行为档位：公开构建默认 `single`，设成 `hosted` 会因为缺少 `abm_cloud` 而启动失败；托管镜像才会带这个私有包。
 
 额度由 `QuotaPolicy` 统一处理：
 
 - 单用户版读 `ABM_LOCAL_*`（如 `ABM_LOCAL_GENERATIONS_PER_DAY`、`ABM_LOCAL_BROWSER_CONNECTIONS`），内容额度默认不限制
 - 托管版读套餐字段，包括生成、token、图片、存储、采集页数、浏览器连接数、每连接会话数和优先级保留位
 
-完整拆分方案见 [开源拆分：core / single / cloud](docs/open-core-split.md)。
+文档索引见 [docs/README.md](docs/README.md)。
 
 ## 社交登录
 
