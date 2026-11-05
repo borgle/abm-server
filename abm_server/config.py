@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     oauth_pending_ttl_seconds: int = Field(default=600, ge=60)
     forwarded_allow_ips: str = "127.0.0.1"
     extension_id: str = "cojffalolochaigkgngieopcefcgbcag"
-    extension_github_url: str = "https://github.com/borgle/browser-mcp-extension"
-    extension_release_url: str = "https://github.com/borgle/browser-mcp-extension/releases/latest"
+    extension_github_url: str = "https://github.com/borgle/abm-extension"
+    extension_release_url: str = "https://github.com/borgle/abm-extension/releases/latest"
     extension_store_url: str = ""
     session_cookie_secure: bool = True
     registration_require_approval: bool = True
