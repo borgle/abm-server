@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Python server for ABM（a browser mcp）"
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = { text = "AGPL-3.0-or-later" }
 dependencies = [
   "aiosqlite>=0.22,<1",
   "alembic>=1.18,<2",
