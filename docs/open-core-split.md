@@ -30,10 +30,12 @@
 
 - 公开代码里没有 hosted 实现
 - `ABM_EDITION` 只选择行为档位，不是商业边界
-- 公开构建默认 `single`；设成 `hosted` 会直接启动失败，因为找不到 `abm_server.cloud`
+- 公开构建默认 `single`；设成 `hosted` 会直接启动失败，因为找不到 `abm_cloud`
 - 商业边界由「私有包 + 许可证」保证
 
-日常开发仍在同一个私有仓库里完成：`abm_server/` 是 core + single，`abm_server/cloud/` 是托管实现。发布时由脚本生成不含 `cloud/` 的公开树，而不是直接公开当前仓库。
+日常开发仍在同一个私有仓库里完成：`abm_server/` 是 core + single，`abm_cloud/` 是托管实现。发布时由脚本生成不含 `abm_cloud` 的公开树，而不是直接公开当前仓库。
+
+`abm_cloud` 已经是独立顶层包，可以单独 build/install；下一步是让公开仓库成为 core 的源，私有仓库只保留 `abm_cloud` 并依赖固定版本的 `abm-server`。
 
 ## 3. 模块归属
 
@@ -56,7 +58,7 @@
 
 ### 4.0 拆分进度
 
-已迁入 `abm_server/cloud/`：
+已迁入 `abm_cloud/`：
 
 - 用户列表、用户详情、禁用/审批、审计查询
 - 套餐配置（独立存储 `creation_plans`，不再混在 core 的 `creation_config`）
@@ -158,7 +160,7 @@ class QuotaPolicy(Protocol):
 | P1 | Edition 开关、能力门禁、注册关闭、后台裁剪 | 已完成 |
 | P2 | QuotaPolicy 抽象（生成 / 图片 / 存储 / 浏览器并发） | 已完成 |
 | P3 | 单用户模型配置页（去掉套餐概念） | 已完成 |
-| P4 | core 抽取与公开仓库、LICENSE | 进行中：用户/审计、套餐与配额、注册与社交建号、MCP 管理工具、账号档位已迁入 cloud；公开测试套件已就绪；用量与审计写入待评估；GitHub 仓库待建 |
+| P4 | core 抽取与公开仓库、LICENSE | 进行中：cloud 已拆成顶层 `abm_cloud` 包；公开树不含 cloud、带单用户测试；下一步公开仓库作为 core 源，私有仓库依赖 `abm-server` |
 | P5 | cloud 私有包与 billing 接口 | 待开始 |
 
 ## 9. 测试策略
