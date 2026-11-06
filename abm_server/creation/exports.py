@@ -21,10 +21,10 @@ from ..models import (
     User,
     utcnow,
 )
+from ..quotas import quota_policy
 from ..storage import ObjectStorage, digest, export_key, media_key
 from .layout import parse_blocks, render_wechat
 from .media import storage_used
-from ..quotas import quota_policy
 from .render import CardDocument, render_cards
 
 TARGETS = {"wechat_html", "xhs_cards"}
@@ -42,9 +42,7 @@ def _mime_suffix(mime: str) -> str:
     }.get(mime, "bin")
 
 
-async def _current_version(
-    session: AsyncSession, asset: CreationAsset
-) -> CreationAssetVersion:
+async def _current_version(session: AsyncSession, asset: CreationAsset) -> CreationAssetVersion:
     if not asset.current_version_id:
         raise ApiError(
             409,
@@ -158,7 +156,9 @@ async def create_export(
         stored = await storage.put(key, payload, content_type="text/html; charset=utf-8")
         export.file_key = stored.key
         export.file_bytes = stored.size
-        export.files = [{"index": item["index"], "src": item["src"], "alt": item["alt"]} for item in images]
+        export.files = [
+            {"index": item["index"], "src": item["src"], "alt": item["alt"]} for item in images
+        ]
         export.status = "ready"
         return export
 
@@ -259,7 +259,9 @@ def export_dict(export: CreationExport, *, base_url: str = "") -> dict[str, Any]
                 }
             )
         else:
-            files.append({"index": item.get("index"), "src": item.get("src"), "alt": item.get("alt")})
+            files.append(
+                {"index": item.get("index"), "src": item.get("src"), "alt": item.get("alt")}
+            )
     return {
         "id": export.id,
         "assetId": export.asset_id,

@@ -1,140 +1,41 @@
-# 工作台前端设计规范
-> 范围：开源单用户版 core。托管版的多用户、套餐、审批、计费不在本仓库。
+# Web UI 设计系统与国际化规范
 
-> 适用范围：`/console/*`、`/admin/*`、`/creation/*` 的工作台界面（`workspace.css` + `workspace-i18n.js`）。
-> 登录、落地页（`app.css`）暂不在此范围，视觉语言保持一致即可。
+## 1. 设计 Token 基线（`web/static/app.css`）
 
-## 1. 原则
+所有公开页面（Landing、Login、OAuth 授权页、MCP 手册）与工作台页面（`/console/*`、`/admin/*`、`/creation/*`）共用 `app.css` 顶层 `:root` 中定义的设计 Token，`workspace.css` 不得重复声明同名基础 Token。
 
-1. **颜色沿用现有体系**：纸张底色、墨色、酸性绿点缀，不新增主题色。
-2. **尺寸只引用 token**：新代码不写裸 `font-size: 10.5px`、`padding: 9px 14px` 这类值。
-3. **一套尺度覆盖全部页面**：同类控件在控制台、管理后台、创作台必须同高同字号。
-4. **文案全部走 i18n**：中英文同时补齐 `workspace-i18n.js`。
+### 1.1 字号标尺（Typography Scale）
+正文与控件必须使用以下 Token（仅展示型大标题允许使用 `>= 17px` 的字面值或 `clamp()`）：
+- `--text-2xs`: `9px`
+- `--text-xs`: `10px`
+- `--text-sm`: `11px`
+- `--text-md`: `12px`
+- `--text-base`: `13px`
+- `--text-lead`: `15px`
 
-## 2. 设计 token
+### 1.2 尺寸与圆角 Token
+- **控件高度**：`--control-sm: 28px`、`--control-md: 34px`、`--control-lg: 40px`、`--control-xl: 48px`
+- **间距基准**：`--space-4: 10px`、`--space-8: 20px`
+- **圆角尺寸**：`--radius-sm: 8px`、`--radius-xl: 18px`
 
-统一定义在 `app.css` 的 `:root`（所有页面都会加载）；`workspace.css` 只保留 `--ws-rail`、`--rail-control-h` 这类布局变量，不再重复定义尺度。
+---
 
-### 2.1 字号
+## 2. 工作台壳层（Workspace Shell）
 
-| Token | 值 | 用途 |
-|---|---:|---|
-| `--text-2xs` | 9px | 表格表头、标签、强辅助信息 |
-| `--text-xs` | 10px | 表单标签、小号状态、胶囊 |
-| `--text-sm` | 11px | 正文默认（列表、卡片说明）、次级控件 |
-| `--text-md` | 12px | 按钮、输入框、表格内容、弹窗正文 |
-| `--text-base` | 13px | 导航项、页面段落 |
-| `--text-lead` | 15px | 长文编辑器、Markdown 预览 |
-| `--text-lg` | 16px | 强调数字、独立标题 |
-| `--text-xl` | 20px | 卡片标题备用 |
-| `--text-2xl` | 24px | 卡片标题（`h2`） |
+- **统一骨架**：`/console/*`、`/admin/*`、`/creation/*` 均继承 `templates/workspace.html`，通过 `<body data-app="..." data-section="..." data-edition="...">` 驱动侧边栏高亮与按需加载脚本。
+- **缓存控制**：
+  - HTML 响应强制设置 `Cache-Control: no-store`，确保版本升级与状态切换即时生效。
+  - `/static/*` 静态资源使用 `_RevalidatingStaticFiles`（`Cache-Control: no-cache`），配合模板全局变量 `?v={{ asset_version }}`（基于静态文件内容计算的 SHA-256 前缀），兼顾缓存校验与 ES Module 嵌套导入的实时更新。
 
-页面主标题使用 `clamp(30px, 3.4vw, 42px)`；17px 以上的展示型字号保留固定值，不进入正文阶梯。
+---
 
-### 2.2 行高
+## 3. 双语国际化（i18n）机制
 
-| Token | 值 | 用途 |
-|---|---:|---|
-| `--leading-tight` | 1.3 | 标题、单行控件 |
-| `--leading-normal` | 1.6 | 正文、表格、说明 |
-| `--leading-relaxed` | 1.75 | 长文编辑/预览 |
-
-### 2.3 间距（4px 基准）
-
-| Token | 值 |
-|---|---:|
-| `--space-1` | 4px |
-| `--space-2` | 6px |
-| `--space-3` | 8px |
-| `--space-4` | 10px |
-| `--space-5` | 12px |
-| `--space-6` | 14px |
-| `--space-7` | 16px |
-| `--space-8` | 20px |
-| `--space-9` | 24px |
-
-### 2.4 控件高度
-
-| Token | 值 | 用途 |
-|---|---:|---|
-| `--control-sm` | 28px | 表格行内小按钮、小号触发器 |
-| `--control-md` | 34px | 工作台默认按钮、输入框、下拉框、图标按钮 |
-| `--control-lg` | 40px | 登录/注册等公共表单控件、侧栏导航项 |
-| `--control-xl` | 48px | 落地页主 CTA |
-
-### 2.5 圆角
-
-| Token | 值 | 用途 |
-|---|---:|---|
-| `--radius-xs` | 6px | 键帽、迷你标签 |
-| `--radius-sm` | 8px | 输入框、下拉框 |
-| `--radius-md` | 10px | 中等容器、代码块 |
-| `--radius-lg` | 12px | 分组容器、抽屉区块 |
-| `--radius-xl` | 18px | 卡片 |
-| `--radius-pill` | 999px | 按钮、徽标、状态胶囊、分段控件 |
-
-## 3. 组件规范
-
-| 组件 | 规范 |
-|---|---|
-| 主/次按钮 `.ws-btn` | 高 34、左右内边距 14、字号 12、胶囊形 |
-| 小按钮 `.ws-btn-small` | 高 28、左右内边距 10、字号 10 |
-| 图标按钮 `.ws-icon-btn` | 34 × 34、胶囊形 |
-| 输入/下拉 `.ws-input` / `.ws-select` | 高 34、左右内边距 10、圆角 8、字号 12 |
-| 多行输入 `textarea.ws-input` | 上下内边距 8、行高 1.6 |
-| 长文编辑器 `.ws-editor` | 上下 16 / 左右 20、行高 1.75、字号 15 |
-| 卡片 `.ws-card` | 圆角 18、内边距 20（`.ws-card-pad`） |
-| 卡片头 `.ws-card-head` | 标题 24、说明 10/1.6、下间距 14 |
-| 表格 `.ws-table` | 表头 9/大写、单元格 12/1.6、内边距 10×10 |
-| 列表行 `.ws-list-row` | 上下 10、字号 12、说明 9 |
-| 页面头 `.ws-page-head` | 下间距 20、标题行高 1.02 |
-| 导航 `.ws-nav a` | 高 40、左右 10、字号 13 |
-| 标签/状态 `.ws-pill` / `.ws-status` | 字号 9、上下 2/4、左右 8 |
-| 分段控件 `.ws-seg` / `.ws-seg-btn` | 容器内边距 2、按钮高 24、字号 10 |
-| 顶栏搜索 `.ws-search` | 高 34、字号 11 |
-| 复选框 / 单选 | 固定 16 × 16，不继承输入框的边框、内边距和圆角；`accent-color: var(--ink)`；表格选择列 `.ws-check` 内垂直居中 |
-
-公共页（登录 / 注册 / 找回密码 / 落地页 / 视频桥 / OAuth 同意页）：
-
-| 组件 | 规范 |
-|---|---|
-| 主按钮 `.button` | 高 40、左右 14、字号 13、胶囊形 |
-| 大按钮 `.button.large` | 高 48、左右 24、字号 15 |
-| 小按钮 `.button.small` | 高 28、左右 10、字号 12 |
-| 输入/下拉 | 高 40、左右 12、圆角 10、字号 13 |
-| 多行输入 | 最小高度 120、上下 10、行高 1.6 |
-| 面板 `.panel` | 内边距 20 |
-| 徽标 `.badge` / `.count` | 上下 4、左右 10、字号 11 |
-
-文档页（`guide.css`）：正文行高 1.75，表格单元格 12 号字、内边距 10×12，代码块 12 号字。
-
-## 4. 使用规则
-
-- 新增样式优先复用 token；确实需要新尺寸时，先判断能否并入现有阶梯。
-- 不要在组件里写 `!important` 调整间距；改用 token 覆盖。
-- 移动端断点保持现值：`1120 / 980 / 720`，只在媒体查询里改布局，不改组件语义尺寸。
-- 新增 UI 文案必须同时补 `zh` 与 `en`；配置项文案使用 `config.*` 前缀，带 `tr()` 回退。
-- 复选框和单选框由 `app.css` 统一重置为 16px，不要再用 `input { width }` 之类的全局规则描述它们；需要 18px 等特例时按组件单独覆盖（如 `.ws-config-switch`）。
-- 变更 `workspace.css` 后运行 `pytest tests/test_design_tokens.py`，确保 token 与核心组件绑定未被改坏。
-
-## 5. 页面审计（2026-11-02）
-
-对 29 个页面做了真实渲染审计（iframe 载入 + 读取计算样式），逐个检查按钮高度、输入框高度、正文字号和横向溢出。
-
-| 页面组 | 按钮 | 输入框 | 正文可用字号 | 溢出 |
-|---|---|---|---|---|
-| 登录 / 注册 / 找回密码 / 重置密码 / 验证邮箱 / 社交补全 | 40 | 40 | 11 / 12 / 13 / 16 | 无 |
-| 落地页 | 28 / 48 | — | 9 / 11 / 12 / 13 / 15 / 16 | 无 |
-| MCP 文档 | — | — | 9 / 10 / 11 / 12 / 13 / 16 | 无 |
-| 视频桥 | 40 | 40 | 11 / 12 / 13 / 16 | 无 |
-| 控制台（5 页） | 34 / 28 | 34 | 9–16 | 无 |
-| 管理后台（7 页） | 34 / 28 | 34（套餐卡片 28） | 9–16 | 无 |
-| 创作台（8 页） | 34 | 34（项目选择 38，位于 40 容器内） | 9–16 | 无 |
-
-审计结论：所有页面横向无溢出；正文不再出现 10.5px / 11.5px 这类半像素字号；按钮与输入框高度统一到 28 / 34 / 40 / 48 四档。
-
-## 6. 已知例外
-
-- 落地页、文档页的展示型标题保留 `clamp()` 与 17px 以上的固定字号（营销/阅读场景）。
-- 品牌字标内部使用 `.62em` 相对字号，属于装饰性排版。
-- 平台预览渲染（`markdown.js`）自带一套阅读排版，按 1.75 行高对齐长文规范。
+- **支持语言**：仅支持英文（`en`）与简体中文（`zh`），其他客户端语言一律回退至 `en`。
+- **防首屏闪烁（`partials/lang_boot.html`）**：
+  - `<head>` 内联脚本在首屏绘制前读取 `localStorage.getItem("abm.lang")` 或 `navigator.languages`。
+  - 当目标语言与模板源语言不一致时，先挂载 `html.abm-lang-booting` 隐藏未翻译文本，待 `i18n.js` / `workspace-i18n.js` 完成 DOM 替换后立即移除。
+- **DOM 标注规则**：
+  - 使用 `data-i18n="key"` 绑定纯文本节点，`data-i18n-placeholder="key"` 绑定输入框占位符。
+  - **严禁**在包裹了 `<input>` / `<select>` / `<textarea>` 的 `<label>` 元素上直接挂载 `data-i18n`（因为 `textContent` 赋值会销毁子表单控件），必须在 `<label>` 内部使用独立的 `<span data-i18n="...">` 包裹文案。
+- **参数配置字典校验**：`admin/system_config.py` 中的每个分组（`config.group.<id>`）与配置项（`config.item.<key>.label` / `.description`）必须在 `workspace-i18n.js` 中提供完整英文翻译，由 `tests/test_config_i18n.py` 自动化守护。

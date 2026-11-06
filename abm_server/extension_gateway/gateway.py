@@ -144,10 +144,7 @@ class ExtensionGateway:
         async with self._state_lock:
             if peer.browser_id:
                 key_ids = self._key_connections.setdefault(peer.api_key_id, set())
-                if (
-                    peer.connection_id not in key_ids
-                    and len(key_ids) >= max_connections
-                ):
+                if peer.connection_id not in key_ids and len(key_ids) >= max_connections:
                     raise GatewayCallError(
                         "ABM_CONNECTION_LIMIT",
                         "This API Key reached its browser connection limit.",

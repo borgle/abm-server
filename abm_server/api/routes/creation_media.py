@@ -244,10 +244,10 @@ async def delete_export_route(
 ) -> Response:
     export = await _export(request, db, auth.user, export_id)
     if export.file_key:
-        try:
+        from contextlib import suppress
+
+        with suppress(StorageError):
             await _storage(request).delete(export.file_key)
-        except StorageError:
-            pass
     await db.delete(export)
     await db.commit()
     return Response(status_code=204)

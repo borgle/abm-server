@@ -27,11 +27,11 @@ from ..models import (
     User,
     utcnow,
 )
+from ..quotas import Limits, quota_policy
 from . import compose
+from .bindings import resolve_chat
 from .llm import chat_completion
 from .service import create_asset, create_version, get_asset, get_project
-from ..bindings import resolve_chat
-from ..quotas import Limits, quota_policy
 
 PROMPT_MAX_CHARS = 48_000
 PER_SOURCE_CHARS = 1_800

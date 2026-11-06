@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 try:  # The hosted edition ships a private cloud package; the open-source tree omits it.
-    from abm_cloud.routes import router as cloud_admin
+    from abm_cloud.api import api_router as cloud_router
 except ImportError:  # pragma: no cover - single-user distribution
-    cloud_admin = None
+    cloud_router = None
 
 from .routes import (
     admin,
@@ -14,18 +14,16 @@ from .routes import (
     extension_ws,
     notices,
     runtime,
-    social,
     usage,
     video,
 )
 
 api_router = APIRouter()
 api_router.include_router(auth.router)
-api_router.include_router(social.router)
 api_router.include_router(api_keys.router)
 api_router.include_router(admin.router)
-if cloud_admin is not None:
-    api_router.include_router(cloud_admin)
+if cloud_router is not None:
+    api_router.include_router(cloud_router)
 api_router.include_router(creation.router)
 api_router.include_router(creation_media.router)
 api_router.include_router(runtime.router)

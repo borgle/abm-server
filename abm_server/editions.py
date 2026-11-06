@@ -59,9 +59,7 @@ def resolve_edition(name: str) -> Edition:
     key = (name or "hosted").strip().lower()
     edition = EDITIONS.get(key)
     if edition is None:
-        raise RuntimeError(
-            f"Unknown ABM_EDITION {name!r}; expected one of {sorted(EDITIONS)}"
-        )
+        raise RuntimeError(f"Unknown ABM_EDITION {name!r}; expected one of {sorted(EDITIONS)}")
     if edition.multi_user and importlib.util.find_spec("abm_cloud") is None:
         raise RuntimeError(
             "ABM_EDITION=hosted requires the private abm_cloud package. "

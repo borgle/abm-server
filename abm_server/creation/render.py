@@ -107,10 +107,19 @@ body {{ font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui
   margin: 0 auto;
 }}
 .card + .card {{ margin-top: 40px; }}
-.brand {{ display: flex; align-items: center; justify-content: space-between; font-size: 24px; color: var(--muted); letter-spacing: .08em; }}
-.pill {{ background: var(--ink); color: var(--accent); padding: 8px 16px; border-radius: 999px; font-size: 20px; font-weight: 700; letter-spacing: .16em; }}
+.brand {{
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 24px; color: var(--muted); letter-spacing: .08em;
+}}
+.pill {{
+  background: var(--ink); color: var(--accent); padding: 8px 16px;
+  border-radius: 999px; font-size: 20px; font-weight: 700; letter-spacing: .16em;
+}}
 .card.dark .pill {{ background: var(--accent); color: var(--ink); }}
-.headline {{ margin: 42px 0 0; font-size: 78px; line-height: 1.16; font-weight: 800; letter-spacing: -.01em; }}
+.headline {{
+  margin: 42px 0 0; font-size: 78px; line-height: 1.16;
+  font-weight: 800; letter-spacing: -.01em;
+}}
 .subtitle {{ margin-top: 22px; font-size: 30px; line-height: 1.6; color: var(--muted); }}
 .rule {{ height: 3px; background: var(--ink); margin-top: 34px; width: 96px; }}
 .content {{ flex: 1; min-height: 0; overflow: hidden; margin-top: 30px; }}
@@ -120,8 +129,15 @@ body {{ font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui
 .card p {{ font-size: 31px; line-height: 1.78; margin: 0 0 22px; }}
 .card ul, .card ol {{ margin: 0 0 22px; padding-left: 34px; }}
 .card li {{ font-size: 31px; line-height: 1.75; margin-bottom: 10px; }}
-.card blockquote {{ margin: 0 0 24px; padding: 18px 24px; border-left: 4px solid var(--ink); background: var(--panel); font-size: 29px; line-height: 1.7; color: var(--muted); }}
-.card pre {{ margin: 0 0 24px; padding: 20px 22px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; font-size: 24px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }}
+.card blockquote {{
+  margin: 0 0 24px; padding: 18px 24px; border-left: 4px solid var(--ink);
+  background: var(--panel); font-size: 29px; line-height: 1.7; color: var(--muted);
+}}
+.card pre {{
+  margin: 0 0 24px; padding: 20px 22px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 14px; font-size: 24px;
+  line-height: 1.6; white-space: pre-wrap; word-break: break-word;
+}}
 .card pre code {{ font-family: Menlo, Consolas, monospace; }}
 .card table {{ width: 100%; border-collapse: collapse; margin: 0 0 24px; font-size: 25px; }}
 .card th, .card td {{ border: 1px solid var(--line); padding: 10px 12px; text-align: left; }}
@@ -134,13 +150,26 @@ body {{ font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui
 .card .item .body p {{ margin: 0; }}
 .card .item .body ul, .card .item .body ol {{ margin: 6px 0 0; padding-left: 28px; }}
 .card hr {{ border: 0; border-top: 2px solid var(--line); margin: 30px 0; }}
-.card .placeholder {{ padding: 26px; border: 2px dashed var(--line); border-radius: 14px; color: var(--muted); font-size: 26px; text-align: center; }}
-.footer {{ display: flex; justify-content: space-between; align-items: center; font-size: 22px; color: var(--muted); padding-top: 18px; }}
+.card .placeholder {{
+  padding: 26px; border: 2px dashed var(--line); border-radius: 14px;
+  color: var(--muted); font-size: 26px; text-align: center;
+}}
+.footer {{
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 22px; color: var(--muted); padding-top: 18px;
+}}
 .cover .headline {{ font-size: 88px; }}
 .cover .content {{ display: flex; flex-direction: column; justify-content: flex-start; }}
-.cover .cover-image {{ margin-top: 40px; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); }}
+.cover .cover-image {{
+  margin-top: 40px; border-radius: 22px; overflow: hidden;
+  border: 1px solid var(--line);
+}}
 .cover .cover-image img {{ width: 100%; display: block; }}
-.grid-bg {{ background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 72px 72px; }}
+.grid-bg {{
+  background-image: linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 72px 72px;
+}}
 </style></head>
 <body><div id="stage"></div>
 <script>
@@ -149,7 +178,8 @@ const stage = document.getElementById('stage');
 const theme = doc.theme;
 const MAX_PAGE = 1440;
 function styleVars() {{
-  return `--bg:${{theme.bg}};--ink:${{theme.ink}};--muted:${{theme.muted}};--accent:${{theme.accent}};--line:${{theme.line}};--panel:${{theme.panel}};`;
+  return `--bg:${{theme.bg}};--ink:${{theme.ink}};--muted:${{theme.muted}};` +
+    `--accent:${{theme.accent}};--line:${{theme.line}};--panel:${{theme.panel}};`;
 }}
 function el(tag, html, cls) {{
   const node = document.createElement(tag);
@@ -306,7 +336,9 @@ async def render_cards(document: CardDocument, *, no_sandbox: bool = False) -> l
                         device_scale_factor=1,
                     )
                     await page.set_content(html, wait_until="load")
-                    await page.wait_for_function("window.__ABM_CARDS_READY__ === true", timeout=15000)
+                    await page.wait_for_function(
+                        "window.__ABM_CARDS_READY__ === true", timeout=15000
+                    )
                     count = await page.locator(".card").count()
                     shots: list[bytes] = []
                     for index in range(count):

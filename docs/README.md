@@ -1,28 +1,21 @@
 # abm-server 文档索引
 
-这是开源的 core / 单用户版。托管版的多用户、套餐、审批、计费和用户管理不在本仓库。
+`abm-server` 是 ABM（**a browser mcp**）的**开源核心与单用户自托管发行版**（AGPL-3.0）。多租户注册审批、SaaS 套餐计费、第三方社交登录、多用户管理与审计后台属于私有托管工程 `abm-cloud`，不在本仓库中。
 
-| 文档 | 内容 |
+## 核心文档目录
+
+| 文档 | 说明 |
 |---|---|
-| [architecture.md](architecture.md) | 系统目标、边界、组件、HTTP/MCP/WebSocket 契约、安全与部署 |
-| [detailed-design.md](detailed-design.md) | 模块实现、事务、并发、失败处理 |
-| [data-flow.md](data-flow.md) | 注册、登录、OAuth、工具调用、视频投递链路 |
-| [scenarios.md](scenarios.md) | 典型操作、参数、预期结果与恢复 |
-| [creation-module.md](creation-module.md) | 创作台产品、交互、数据与接口 |
-| [creation-media-and-layout.md](creation-media-and-layout.md) | 图片生成、对象存储、公众号/小红书导出 |
-| [mcp-agent-guide.md](mcp-agent-guide.md) | MCP 客户端接入 |
-| [ui-design-system.md](ui-design-system.md) | 设计 token 与组件规范 |
-| [local-mode.md](local-mode.md) | 本机单用户部署与扩展连接 |
+| [architecture.md](architecture.md) | 系统架构、领域包边界、HTTP / MCP / WebSocket（`abm/1`）契约、安全模型与 Open-Core 扩展接口 |
+| [detailed-design.md](detailed-design.md) | 核心模块实现细节、并发锁与限流、事务边界、本地配额策略（`LocalQuotaPolicy`）与故障恢复 |
+| [data-flow.md](data-flow.md) | 端到端数据流：单用户初始化与登录、扩展连接与工具调用、MCP OAuth 2.1 授权、视频双通道投递 |
+| [creation-studio.md](creation-studio.md) | 创作台完整架构：选题雷达、素材库、AI 撰稿、图片生成、对象存储、公众号/小红书排版导出与发布辅助 |
+| [mcp-agent-guide.md](mcp-agent-guide.md) | MCP 客户端接入指南：OAuth 2.1 + PKCE 流程、Scope 权限、多会话租约与工具清单 |
+| [local-mode.md](local-mode.md) | 单用户自托管与本机部署指南（Docker / SQLite / PostgreSQL / 本地与 S3 存储） |
+| [ui-design-system.md](ui-design-system.md) | Web 控制台与工作台 UI 设计 Token、组件规范与双语（`zh` / `en`）国际化机制 |
 
-## 范围说明
+## 架构维护准则
 
-- 单用户版保留登录、扩展、MCP、创作台、本机模型配置和本地额度
-- 多用户、注册审批、套餐、计费、审计后台属于托管版，不在本仓库
-- 文档里出现「套餐 / 审批 / 用户管理」的段落，是 core 为托管版保留的扩展点说明；开源构建会把对应接口返回 404
-
-## 维护规则
-
-- 公开 API、MCP 工具 Schema、`abm/1` 消息、错误码、环境变量或数据库结构变化时更新 `architecture.md`
-- 模块职责、事务边界、并发或失败处理变化时更新 `detailed-design.md`
-- 端到端链路变化时更新 `data-flow.md` 和 `scenarios.md`
-- 文档中的命令、路径、字段名必须与代码一致
+1. **包边界一致性**：文档中的模块路径必须与 `abm_server/` 源码结构严格对齐。
+2. **协议契约先行**：修改公开 HTTP 路由、MCP 工具 Schema、`abm/1` WebSocket 信封、`ABM_*` 错误码或数据库迁移时，必须同步更新 `architecture.md` 与 `data-flow.md`。
+3. **严禁反向依赖**：`abm-server` 只提供标准能力矩阵（`Edition`）与可选插件扩展点，不得对 `abm_cloud` 产生硬编码运行依赖。

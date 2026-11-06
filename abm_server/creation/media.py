@@ -11,12 +11,12 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..admin.creation_config import decrypt_secret, load_config
-from ..bindings import resolve_image
 from ..config import Settings
 from ..errors import ApiError
 from ..models import CreationAsset, CreationExport, CreationMedia, User, utcnow
 from ..quotas import Limits, quota_policy
 from ..storage import ObjectStorage, digest, media_key
+from .bindings import resolve_image
 from .images import ImageProvider, build_openai_images_provider
 
 PLATFORM_SIZES = {
@@ -84,6 +84,7 @@ def normalize_cover(data: bytes, size: tuple[int, int]) -> bytes:
             retryable=True,
             action="retry",
         ) from exc
+
 
 MEDIA_ERROR_TEXT = {
     "ABM_CREATION_IMAGE_NOT_CONFIGURED": "No image model is bound to this plan.",
@@ -247,9 +248,7 @@ async def get_media(session: AsyncSession, user_id: str, media_id: str) -> Creat
     return media
 
 
-async def _existing_by_sha(
-    session: AsyncSession, user_id: str, sha: str
-) -> CreationMedia | None:
+async def _existing_by_sha(session: AsyncSession, user_id: str, sha: str) -> CreationMedia | None:
     return await session.scalar(
         select(CreationMedia).where(
             CreationMedia.user_id == user_id,
@@ -374,7 +373,11 @@ async def generate_media(
             storage_key=stored.key,
             bytes=stored.size,
             sha256=sha,
-            meta={"size": resolved_size, "requested": requested, "coverSize": list(cover_size or [])},
+            meta={
+                "size": resolved_size,
+                "requested": requested,
+                "coverSize": list(cover_size or []),
+            },
         )
         session.add(row)
         rows.append(row)

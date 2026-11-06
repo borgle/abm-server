@@ -40,10 +40,12 @@ class Database:
 
         async with self.engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
+        await self.engine.dispose()
 
     async def drop_schema(self) -> None:
         async with self.engine.begin() as connection:
             await connection.run_sync(Base.metadata.drop_all)
+        await self.engine.dispose()
 
     async def dispose(self) -> None:
         await self.engine.dispose()

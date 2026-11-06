@@ -25,11 +25,30 @@ def settings(tmp_path) -> Settings:
 
 
 @pytest.fixture
-def client(settings: Settings) -> Iterator[TestClient]:
-    database = Database(settings)
+def database(settings: Settings) -> Database:
+    return Database(settings)
+
+
+@pytest.fixture
+def client(settings: Settings, database: Database) -> Iterator[TestClient]:
     asyncio.run(database.create_schema())
     with TestClient(create_app(settings, database)) as test_client:
         yield test_client
+
+
+@pytest.fixture
+def admin_settings(settings: Settings) -> Settings:
+    return settings
+
+
+@pytest.fixture
+def admin_database(database: Database) -> Database:
+    return database
+
+
+@pytest.fixture
+def admin_client(client: TestClient) -> TestClient:
+    return client
 
 
 def login(client: TestClient) -> str:

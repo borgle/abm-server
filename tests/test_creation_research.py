@@ -630,7 +630,9 @@ class CaptchaThenResultsDriver(FakeDriver):
 async def _run_engines(driver, engines, tmp_path, **settings_overrides):
     database = Database(_settings(tmp_path, **settings_overrides))
     await database.create_schema()
-    runner = ResearchRunner(database, gateway=None, settings=_settings(tmp_path, **settings_overrides))
+    runner = ResearchRunner(
+        database, gateway=None, settings=_settings(tmp_path, **settings_overrides)
+    )
     user = await _seed_user(database)
     async with database.sessions() as session:
         job = await create_job(
@@ -680,6 +682,7 @@ def test_runner_continues_other_engines_after_captcha(tmp_path) -> None:
     assert job.progress["skippedEngines"] == ["bing"]
     assert job.error_code in {"ABM_RESEARCH_PARTIAL", "ABM_RESEARCH_CAPTCHA"}
 
+
 class ForkingDriver(FakeDriver):
     def __init__(self) -> None:
         super().__init__()
@@ -707,6 +710,7 @@ def test_runner_searches_engines_in_parallel(tmp_path) -> None:
     assert job is not None
     assert driver.peak >= 2
     assert job.status in {"completed", "partial"}
+
 
 class CaptchaOnFirstFetchDriver(FakeDriver):
     def __init__(self) -> None:
@@ -814,4 +818,3 @@ def test_runner_skip_current_marks_url_visited(tmp_path) -> None:
         await database.dispose()
 
     asyncio.run(scenario())
-

@@ -54,7 +54,7 @@ abm_server = ["web/templates/*.html", "web/templates/partials/*.html", "web/stat
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests", "tests_public"]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100

@@ -17,7 +17,7 @@ LOCAL_TIER = "local"
 def tier_for(user: User, settings: Settings, now: datetime | None = None) -> str:
     if (settings.edition or "hosted").strip().lower() == "single":
         return LOCAL_TIER
-    from abm_cloud.tiers import tier_for as cloud_tier
+    from abm_cloud.accounts import tier_for as cloud_tier
 
     return cloud_tier(user, now)
 

@@ -11,7 +11,6 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from ...api_keys import resolve_api_key
 from ...errors import ApiError
-from ...tiers import tier_for
 from ...extension_gateway import (
     PROTOCOL_VERSION,
     WS_SUBPROTOCOL,
@@ -23,6 +22,7 @@ from ...extension_gateway import (
     error_envelope,
     validate_envelope,
 )
+from ...tiers import tier_for
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["extension"])

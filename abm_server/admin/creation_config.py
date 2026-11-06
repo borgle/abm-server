@@ -55,9 +55,7 @@ def _merge_config(value: object) -> dict:
         config["providers"] = [item for item in providers if isinstance(item, dict)]
     local = value.get("local")
     if isinstance(local, dict):
-        config["local"].update(
-            {key: local[key] for key in config["local"] if key in local}
-        )
+        config["local"].update({key: local[key] for key in config["local"] if key in local})
     return config
 
 
@@ -140,8 +138,11 @@ def public_config(config: dict) -> dict:
     }
 
 
-def _find_provider(config: dict, provider_id: str) -> dict | None:
+def find_provider(config: dict, provider_id: str) -> dict | None:
     return next((item for item in config["providers"] if item.get("id") == provider_id), None)
+
+
+_find_provider = find_provider
 
 
 def _normalize_base_url(value: str) -> str:

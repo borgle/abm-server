@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,6 +16,12 @@ from ...admin.creation_config import (
     update_provider,
     update_system,
 )
+from ...admin.system_config import (
+    config_payload,
+    export_payload,
+    load_overrides,
+    save_overrides,
+)
 from ...auth.dependencies import AuthContext, require_admin, require_admin_csrf
 from ...database import get_session
 from ...errors import ApiError
@@ -26,10 +32,7 @@ from ...schemas import (
     LocalModelPatch,
     SystemConfigImport,
     SystemConfigPatch,
-    SystemSettingsPatch,
-    SystemSettingsResponse,
 )
-from ...system_config import config_payload, export_payload, load_overrides, save_overrides
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
@@ -266,21 +269,19 @@ async def patch_admin_system(
     return {"ok": True, "registrationRequireApproval": registration, **config}
 
 
-# Keep the old names available for imports that referenced the route module.
 __all__ = [
     "router",
-    "list_users_route",
-    "patch_user",
-    "get_system_settings",
-    "patch_system_settings",
-    "list_audit",
-    "get_creation_plans",
-    "put_creation_plan",
+    "get_local_model",
+    "put_local_model",
     "list_creation_providers",
     "create_creation_provider",
     "patch_creation_provider",
     "remove_creation_provider",
     "test_creation_provider",
+    "get_system_config",
+    "patch_system_config",
+    "export_system_config",
+    "import_system_config",
     "get_admin_system",
     "patch_admin_system",
 ]

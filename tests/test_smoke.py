@@ -38,7 +38,12 @@ def test_single_edition_hides_multi_user_admin(client: TestClient) -> None:
 
 def test_creation_workspace_pages_load(client: TestClient) -> None:
     _login(client)
-    for path in ("/creation/overview", "/creation/library", "/creation/studio", "/creation/publish"):
+    for path in (
+        "/creation/overview",
+        "/creation/library",
+        "/creation/studio",
+        "/creation/publish",
+    ):
         response = client.get(path)
         assert response.status_code == 200
         assert 'data-app="creation"' in response.text

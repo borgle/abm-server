@@ -1,6 +1,6 @@
 """Thin core wrapper for the registration approval toggle.
 
-The implementation lives in ``abm_cloud.provisioning``. Without the
+The implementation lives in ``abm_cloud.accounts``. Without the
 private cloud package the call fails, which keeps the open-source build
 single-user only.
 """
@@ -20,7 +20,7 @@ async def update_registration_approval(
     actor: User,
 ) -> None:
     try:
-        from abm_cloud.provisioning import update_registration_approval as update
+        from abm_cloud.accounts import update_registration_approval as update
     except ImportError as exc:
         raise ApiError(
             404,

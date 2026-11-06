@@ -220,26 +220,6 @@
       <article class="ws-card ws-card-pad"><div class="ws-card-head"><div><h2 data-i18n="workspace.serviceStatus">服务状态</h2><p data-i18n="workspace.serviceStatusLead">静态展示，后续接入健康检查。</p></div></div><span class="ws-status ws-status-ok" data-i18n="workspace.normal">正常</span></article>
     </div>
   </section>
-  {% else %}
-  <section class="ws-page">
-    <div class="ws-page-head">
-      <div>
-        <p class="ws-eyebrow" data-i18n="workspace.comingSoon">COMING SOON</p>
-        <h1 data-i18n="{{ page_key }}">{{ title }}</h1>
-        <p data-i18n="workspace.placeholderLead">这个页面已经接入新的壳和真实子路径，业务内容会在后续阶段迁移。</p>
-      </div>
-      <div class="ws-actions">
-        <a class="ws-btn" href="/console/overview" data-i18n="workspace.backOverview">返回概览</a>
-        <a class="ws-btn ws-btn-primary" href="/console" data-i18n="workspace.openOld">打开旧版</a>
-      </div>
-    </div>
-    <article class="ws-card ws-card-pad ws-placeholder">
-      <div class="ws-placeholder-mark">P0</div>
-      <h2 data-i18n="workspace.placeholderTitle">页面骨架已就绪</h2>
-      <p data-i18n="workspace.placeholderBody">新壳、侧栏、顶栏、语言切换和路由已经可用。当前功能请继续使用旧版控制台，迁移完成后这里会自动接替。</p>
-      <a class="ws-btn" href="/console" data-i18n="workspace.openOld">打开旧版控制台</a>
-    </article>
-  </section>
   {% endif %}
 {% endblock %}
 {% block scripts %}

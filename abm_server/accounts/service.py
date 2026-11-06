@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import secrets
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
@@ -82,7 +81,7 @@ async def register_user(
     registration_require_approval: bool,
 ) -> User | None:
     try:
-        from abm_cloud.provisioning import register_user as provision
+        from abm_cloud.accounts import register_user as provision
     except ImportError as exc:
         raise ApiError(
             403,
@@ -147,7 +146,7 @@ async def register_social_user(
     """Create a user from a social profile through the hosted provisioner."""
 
     try:
-        from abm_cloud.provisioning import register_social_user as provision
+        from abm_cloud.accounts import register_social_user as provision
     except ImportError as exc:
         raise ApiError(
             403,

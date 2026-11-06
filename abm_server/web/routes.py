@@ -13,9 +13,19 @@ from ..database import get_session
 from ..errors import ApiError
 from ..mcp.oauth import OAUTH_SCOPE_DESCRIPTIONS
 from ..models import UserRole
-from ..social import public_provider_descriptors
 
 router = APIRouter(tags=["web"])
+
+
+def _social_providers(settings) -> list[dict[str, object]]:
+    if not settings.social_login_enabled:
+        return []
+    try:
+        from abm_cloud.social import public_provider_descriptors
+    except ImportError:
+        return []
+    return public_provider_descriptors(settings)
+
 
 _PACKAGE_DIR = Path(__file__).parent
 _STATIC_DIR = _PACKAGE_DIR / "static"
@@ -78,7 +88,7 @@ async def mcp_guide_page(request: Request):
 async def register_page(request: Request):
     if not request.app.state.edition.self_registration:
         raise HTTPException(status_code=404)
-    providers = public_provider_descriptors(request.app.state.settings)
+    providers = _social_providers(request.app.state.settings)
     return templates.TemplateResponse(
         request,
         "register.html",
@@ -121,7 +131,7 @@ async def verify_email_page(request: Request):
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    providers = public_provider_descriptors(request.app.state.settings)
+    providers = _social_providers(request.app.state.settings)
     return templates.TemplateResponse(
         request,
         "login.html",
@@ -137,6 +147,8 @@ async def login_page(request: Request):
 
 @router.get("/social/complete", response_class=HTMLResponse)
 async def social_complete_page(request: Request):
+    if not request.app.state.edition.self_registration:
+        raise HTTPException(status_code=404)
     return templates.TemplateResponse(
         request,
         "social_complete.html",
@@ -267,16 +279,7 @@ async def creation_page(
     except ApiError:
         next_path = quote(request.url.path, safe="")
         return RedirectResponse(f"/login?next={next_path}", status_code=303)
-    template = {
-        "overview": "creation_overview.html",
-        "assets": "creation_assets.html",
-        "studio": "creation_studio.html",
-        "radar": "creation_radar.html",
-        "library": "creation_library.html",
-        "templates": "creation_templates.html",
-        "trash": "creation_trash.html",
-        "publish": "creation_publish.html",
-    }.get(section, "creation_placeholder.html")
+    template = f"creation_{section}.html"
     return templates.TemplateResponse(
         request,
         template,

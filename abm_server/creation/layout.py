@@ -119,10 +119,16 @@ def parse_blocks(markdown: str) -> list[Block]:
             items: list[Block] = []
             while index < len(tokens):
                 current = tokens[index]
-                if current.type in {"bullet_list_open", "ordered_list_open"} and current.level == depth + 1:
+                if (
+                    current.type in {"bullet_list_open", "ordered_list_open"}
+                    and current.level == depth + 1
+                ):
                     index += 1
                     continue
-                if current.type in {"bullet_list_close", "ordered_list_close"} and current.level == depth:
+                if (
+                    current.type in {"bullet_list_close", "ordered_list_close"}
+                    and current.level == depth
+                ):
                     index += 1
                     break
                 if current.type == "list_item_open":
@@ -193,7 +199,9 @@ def parse_blocks(markdown: str) -> list[Block]:
                     index += 1
                     break
                 index += 1
-            blocks.append(Block(type="table", html=md.renderer.render(tokens[start:index], md.options, {})))
+            blocks.append(
+                Block(type="table", html=md.renderer.render(tokens[start:index], md.options, {}))
+            )
             continue
 
         index += 1
@@ -216,7 +224,7 @@ def _rewrite_html(
         label = html_module.escape(alt or f"图 {number}")
         return (
             f'<div style="margin:0 0 18px;padding:18px;border:1px dashed #c9ccbf;'
-            f'border-radius:10px;background:#f7f7f1;color:#7a7d71;font-size:14px;'
+            f"border-radius:10px;background:#f7f7f1;color:#7a7d71;font-size:14px;"
             f'text-align:center;">[图 {number}] {label}'
             f'<br><span style="font-size:12px;">上传压缩包里的 image-{number:02d}</span></div>'
         )
@@ -224,7 +232,8 @@ def _rewrite_html(
     def replace_link(match: re.Match[str]) -> str:
         url = match.group(1)
         text = match.group(2)
-        return f'{text}<span style="color:#7a7d71;font-size:13px;">（{html_module.escape(url)}）</span>'
+        escaped = html_module.escape(url)
+        return f'{text}<span style="color:#7a7d71;font-size:13px;">（{escaped}）</span>'
 
     fragment = _IMG_TAG.sub(replace_image, fragment)
     fragment = _LINK_TAG.sub(replace_link, fragment)
@@ -288,11 +297,12 @@ def render_wechat(title: str, blocks: list[Block]) -> tuple[str, list[dict[str, 
         body_parts.append(_rewrite_html(fragment, images))
     body = "\n".join(part for part in body_parts if part)
     document = (
-        "<!doctype html><html lang=\"zh\"><head><meta charset=\"utf-8\" />"
+        '<!doctype html><html lang="zh"><head><meta charset="utf-8" />'
         f"<title>{html_module.escape(title)}</title></head>"
-        "<body style=\"margin:0;padding:0;background:#ffffff;\">"
-        f'<div style="max-width:677px;margin:0 auto;padding:22px 18px 40px;'
-        f'font-family:-apple-system,BlinkMacSystemFont,\'PingFang SC\',\'Microsoft YaHei\',sans-serif;">'
+        '<body style="margin:0;padding:0;background:#ffffff;">'
+        '<div style="max-width:677px;margin:0 auto;padding:22px 18px 40px;'
+        "font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',"
+        "'Microsoft YaHei',sans-serif;\">"
         f"{body}</div></body></html>"
     )
     return document, images

@@ -54,13 +54,13 @@ from ..models import (
     utcnow,
 )
 from ..notices import NotificationService
-from ..tiers import tier_for
 from ..schemas import (
     ApiKeyCreateResponse,
     ApiKeyResponse,
     RegisterRequest,
     UserResponse,
 )
+from ..tiers import tier_for
 from ..usage import UsageService
 from ..video import VideoError, VideoService
 from .oauth import OAuthService
@@ -859,14 +859,14 @@ class McpService:
         auth: RuntimeAuth,
     ) -> types.CallToolResult:
         try:
-            from abm_cloud import mcp_admin
+            from abm_cloud.mcp import call_admin_tool
         except ImportError as exc:
             raise ApiError(
                 404,
                 "ABM_TOOL_NOT_FOUND",
                 "Administrator tools are not available on this server.",
             ) from exc
-        return await mcp_admin.call(self, name, args, auth)
+        return await call_admin_tool(self, name, args, auth)
 
     async def _maybe_alert_usage(
         self,

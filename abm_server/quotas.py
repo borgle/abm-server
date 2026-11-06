@@ -2,7 +2,7 @@
 
 Content quotas used to be read from a plan JSON. The open-source edition has no
 plans: limits come from environment settings and default to unlimited. The
-hosted edition supplies ``abm_cloud.quotas.PlanQuotaPolicy`` privately.
+hosted edition supplies ``abm_cloud.plans.PlanQuotaPolicy`` privately.
 """
 
 from __future__ import annotations
@@ -83,6 +83,6 @@ class LocalQuotaPolicy:
 def quota_policy(settings: Settings) -> QuotaPolicy:
     if (settings.edition or "hosted").strip().lower() == "single":
         return LocalQuotaPolicy(settings)
-    from abm_cloud.quotas import PlanQuotaPolicy
+    from abm_cloud.plans import PlanQuotaPolicy
 
     return PlanQuotaPolicy(settings)

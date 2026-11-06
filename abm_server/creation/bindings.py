@@ -10,20 +10,14 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .config import Settings
-from .errors import ApiError
-from .models import User
+from ..admin.creation_config import find_provider
+from ..config import Settings
+from ..errors import ApiError
+from ..models import User
 
 
 def _is_single(settings: Settings) -> bool:
     return (settings.edition or "hosted").strip().lower() == "single"
-
-
-def _find_provider(config: dict[str, Any], provider_id: str) -> dict[str, Any] | None:
-    return next(
-        (item for item in config.get("providers", []) if item.get("id") == provider_id),
-        None,
-    )
 
 
 async def resolve_chat(
@@ -33,7 +27,7 @@ async def resolve_chat(
     user: User,
 ) -> tuple[dict[str, Any], str, str]:
     if not _is_single(settings):
-        from abm_cloud.bindings import resolve_chat as cloud_resolve
+        from abm_cloud.plans import resolve_chat as cloud_resolve
 
         return await cloud_resolve(session, config, user)
 
@@ -48,7 +42,7 @@ async def resolve_chat(
             retryable=False,
             action="contact_admin",
         )
-    provider = _find_provider(config, str(provider_id))
+    provider = find_provider(config, str(provider_id))
     if provider is None:
         raise ApiError(
             409,
@@ -67,7 +61,7 @@ async def resolve_image(
     user: User,
 ) -> tuple[str, str]:
     if not _is_single(settings):
-        from abm_cloud.bindings import resolve_image as cloud_resolve
+        from abm_cloud.plans import resolve_image as cloud_resolve
 
         return await cloud_resolve(session, config, user)
 
@@ -82,7 +76,7 @@ async def resolve_image(
             retryable=False,
             action="contact_admin",
         )
-    if _find_provider(config, provider_id) is None:
+    if find_provider(config, provider_id) is None:
         raise ApiError(
             409,
             "ABM_CREATION_IMAGE_NOT_CONFIGURED",

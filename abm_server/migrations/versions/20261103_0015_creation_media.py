@@ -8,7 +8,6 @@ Create Date: 2026-11-03
 from collections.abc import Sequence
 
 import sqlalchemy as sa
-
 from alembic import op
 
 revision: str = "20261103_0015"
@@ -52,9 +51,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        "ix_creation_media_user_created", "creation_media", ["user_id", "created_at"]
-    )
+    op.create_index("ix_creation_media_user_created", "creation_media", ["user_id", "created_at"])
     op.create_index("ix_creation_media_asset_kind", "creation_media", ["asset_id", "kind"])
     op.create_index("ix_creation_media_user_sha", "creation_media", ["user_id", "sha256"])
     op.create_index("ix_creation_media_purge_after", "creation_media", ["purge_after"])

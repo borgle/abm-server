@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from abm_server.system_config import GROUPS, SPECS
+from abm_server.admin.system_config import GROUPS, SPECS
 
 I18N = Path(__file__).resolve().parents[1] / "abm_server" / "web" / "static" / "workspace-i18n.js"
 
@@ -18,7 +18,7 @@ def test_every_runtime_config_entry_has_english_copy() -> None:
     keys = _english_keys()
     missing: list[str] = []
     for group in GROUPS:
-        key = f'config.group.{group["id"]}'
+        key = f"config.group.{group['id']}"
         if key not in keys:
             missing.append(key)
     for spec in SPECS:

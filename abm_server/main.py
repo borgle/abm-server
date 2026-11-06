@@ -14,6 +14,7 @@ from sqlalchemy import text
 
 from . import __version__
 from .accounts import cleanup_account_sessions, initialize_identity_state
+from .admin.system_config import apply_overrides, capture_base, load_overrides
 from .api import api_router
 from .concurrency import KeyedLockPool, SlidingWindowLimiter
 from .config import Settings, get_settings
@@ -27,7 +28,6 @@ from .logging import configure_logging
 from .mcp import McpPathMiddleware, McpService
 from .notices import NotificationService
 from .storage import build_storage
-from .system_config import apply_overrides, capture_base, load_overrides
 from .usage import UsageService
 from .video import VideoService
 from .web import router as web_router

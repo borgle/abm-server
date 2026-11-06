@@ -41,10 +41,9 @@ from ...creation.research.runner import TERMINAL_STATUSES
 from ...creation.templates_data import CATEGORIES, template_list
 from ...database import get_session
 from ...errors import ApiError
-from ...quotas import quota_policy
-from ...tiers import tier_for
 from ...extension_gateway import GatewayCallError
 from ...models import CreationAssetVersion, CreationResearchJob, utcnow
+from ...quotas import quota_policy
 from ...schemas import (
     CreationAssetCreate,
     CreationAssetPatch,
@@ -57,6 +56,7 @@ from ...schemas import (
     CreationResearchResume,
     CreationVersionCreate,
 )
+from ...tiers import tier_for
 
 router = APIRouter(prefix="/api/v1/creation", tags=["creation"])
 
@@ -148,9 +148,7 @@ async def assets(
     for row in rows:
         item = public_asset(row)
         cover = covers.get(row.id)
-        item["coverUrl"] = (
-            f"/api/v1/creation/media/{cover.id}/file" if cover is not None else None
-        )
+        item["coverUrl"] = f"/api/v1/creation/media/{cover.id}/file" if cover is not None else None
         items.append(item)
     return {
         "ok": True,

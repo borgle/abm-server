@@ -42,7 +42,7 @@ from ...auth.security import hash_password, verify_password
 from ...database import get_session
 from ...errors import ApiError
 from ...extension_gateway import SessionError
-from ...models import AccountAuditEvent, User, UserRole, UserStatus, utcnow
+from ...models import AccountAuditEvent, ExternalIdentity, User, UserRole, UserStatus, utcnow
 from ...schemas import (
     AcceptedResponse,
     AccountDeleteRequest,
@@ -55,11 +55,33 @@ from ...schemas import (
     TokenConfirmRequest,
     UserResponse,
 )
-from ...social import list_identities, provider_name
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
+_PROVIDER_NAMES = {
+    "wechat": "WeChat",
+    "qq": "QQ",
+    "google": "Google",
+    "github": "GitHub",
+    "microsoft": "Microsoft",
+}
+_EMAIL_LESS_PROVIDERS = {"wechat", "qq"}
+
+
+def _provider_name(provider_id: str) -> str:
+    return _PROVIDER_NAMES.get(provider_id, provider_id)
+
+
+def _social_providers(settings) -> list[dict[str, object]]:
+    if not settings.social_login_enabled:
+        return []
+    try:
+        from abm_cloud.social import public_provider_descriptors
+    except ImportError:
+        return []
+    return public_provider_descriptors(settings)
 
 
 def _client_ip(request: Request) -> str:
@@ -377,7 +399,13 @@ async def export_account(
         )
     )
     usage = await request.app.state.usage_service.summary(auth.user.id, days=365)
-    identities = await list_identities(db, user_id=auth.user.id)
+    identities = list(
+        await db.scalars(
+            select(ExternalIdentity)
+            .where(ExternalIdentity.user_id == auth.user.id)
+            .order_by(ExternalIdentity.linked_at.desc())
+        )
+    )
     payload = {
         "exportedAt": utcnow().isoformat(),
         "user": UserResponse.model_validate(auth.user).model_dump(
@@ -387,7 +415,7 @@ async def export_account(
         "socialIdentities": [
             {
                 "provider": identity.provider,
-                "providerName": provider_name(identity.provider),
+                "providerName": _provider_name(identity.provider),
                 "email": identity.email,
                 "emailVerified": identity.email_verified,
                 "linkedAt": identity.linked_at.isoformat(),
@@ -512,6 +540,68 @@ async def change_password(
         actor_user_id=auth.user.id,
         subject_user_id=auth.user.id,
         metadata={},
+    )
+    await db.commit()
+    return Response(status_code=204)
+
+
+@router.get("/identities")
+async def account_identities(
+    request: Request,
+    auth: AuthContext = Depends(get_current_auth),
+    db: AsyncSession = Depends(get_session),
+) -> dict:
+    identities = list(
+        await db.scalars(
+            select(ExternalIdentity)
+            .where(ExternalIdentity.user_id == auth.user.id)
+            .order_by(ExternalIdentity.linked_at.desc())
+        )
+    )
+    providers = _social_providers(request.app.state.settings)
+    return {
+        "items": [
+            {
+                "id": identity.id,
+                "provider": identity.provider,
+                "providerName": _provider_name(identity.provider),
+                "email": identity.email,
+                "emailVerified": identity.email_verified,
+                "requiresEmail": identity.provider in _EMAIL_LESS_PROVIDERS,
+                "displayName": identity.display_name,
+                "linkedAt": identity.linked_at.isoformat(),
+                "lastLoginAt": (
+                    identity.last_login_at.isoformat() if identity.last_login_at else None
+                ),
+            }
+            for identity in identities
+        ],
+        "providers": providers,
+        "email": auth.user.email,
+        "emailNormalized": normalize_email(auth.user.email),
+        "account": UserResponse.model_validate(auth.user).model_dump(
+            by_alias=True,
+            mode="json",
+        ),
+    }
+
+
+@router.delete("/identities/{identity_id}", status_code=204)
+async def remove_account_identity(
+    identity_id: str,
+    auth: AuthContext = Depends(require_csrf),
+    db: AsyncSession = Depends(get_session),
+) -> Response:
+    identity = await db.get(ExternalIdentity, identity_id)
+    if identity is None or identity.user_id != auth.user.id:
+        raise ApiError(404, "ABM_NOT_FOUND", "Linked account not found.")
+    await db.delete(identity)
+    record_audit(
+        db,
+        event_type="ABM_ACCOUNT_SOCIAL_UNLINKED",
+        actor_user_id=auth.user.id,
+        subject_user_id=auth.user.id,
+        metadata={"provider": identity.provider},
     )
     await db.commit()
     return Response(status_code=204)
